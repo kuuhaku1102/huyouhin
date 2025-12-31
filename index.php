@@ -19,6 +19,7 @@
     <div class="pagination">
       <?php the_posts_pagination(); ?>
     </div>
+  テスト
   <?php else : ?>
     <p>記事が見つかりません。</p>
   <?php endif; ?>
