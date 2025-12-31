@@ -1,8 +1,10 @@
-name: Deploy Mama Gen Theme to ConoHa WING
+name: Deploy WordPress Theme to ConoHa WING
+# ↑ 【変更OK】ワークフロー名（テーマ名・案件名に合わせて）
 
 on:
   push:
     branches: [ main ]
+    # ↑ 【変更OK】本番ブランチ名（staging / develop などでも可）
   workflow_dispatch:
 
 jobs:
@@ -10,29 +12,74 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ----------------------------
+      # ① リポジトリを取得
+      # ----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH key
+      # ----------------------------
+      # ② SSH疎通確認（任意）
+      # ※ デバッグ用途。不要なら削除OK
+      # ----------------------------
+      - name: Test SSH connection (optional)
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 8022 -H www1012.conoha.ne.jp >> ~/.ssh/known_hosts
 
-      - name: Test SSH connection
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -p 8022 c3659606@www1012.conoha.ne.jp "echo '✅ SSH connection successful!' && pwd"
+          ssh -i ~/.ssh/id_ed25519 -p 8022 \
+            c3659606@www1012.conoha.ne.jp \
+            "echo '✅ SSH connection successful'"
 
-      - name: Deploy Mama Gen Theme files
+          # ↑ 【変更必須】ユーザー名
+          # ↑ 【変更必須】サーバー名
+          # ↑ 【変更必須】ポート（ConoHaは通常 8022）
+
+      # ----------------------------
+      # ③ テーマファイルをデプロイ
+      # ----------------------------
+      - name: Deploy WordPress Theme via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
+          # ===== 接続情報 =====
           server: www1012.conoha.ne.jp
+          # ↑ 【変更必須】ConoHaのホスト名
+
           port: 8022
+          # ↑ 【通常固定】ConoHaは 8022
+
           username: c3659606
+          # ↑ 【変更必須】ConoHaのFTP/SSHユーザー
+
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # ↑ 【固定】GitHub Secrets に登録した秘密鍵
+
+          # ===== ローカル設定 =====
           local_path: ./
-          remote_path: "public_html/volitionmagazine.com/wp-content/themes/my-simple-theme/"
+          # ↑ 【通常固定】GitHubリポジトリ直下＝テーマ中身
+
+          # ===== リモート設定 =====
+          remote_path: public_html/volitionmagazine.com/wp-content/themes/my-simple-theme/
+          # ↑ 【変更必須】
+          #   - ドメイン名
+          #   - テーマフォルダ名
+          # ※ このディレクトリは事前に存在している必要あり
+
           sftp_only: true
+          # ↑ 【固定】ConoHa WING 推奨
+
           delete_remote_files: false
-          rsyncArgs: "--exclude='.git/' --exclude='.github/' --exclude='node_modules/' --exclude='.env' --exclude='.DS_Store'"
+          # ↑ 【任意】
+          #   true  = GitHubに無いファイルは削除（慎重に）
+          #   false = 既存ファイルは残す（安全）
+
+          # ===== 除外設定 =====
+          rsyncArgs: >
+            --exclude='.git/'
+            --exclude='.github/'
+            --exclude='node_modules/'
+            --exclude='.env'
+            --exclude='.DS_Store'
+          # ↑ 【通常固定】テーマに不要なものを除外
