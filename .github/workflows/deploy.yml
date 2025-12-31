@@ -61,7 +61,8 @@ jobs:
           # ↑ 【通常固定】GitHubリポジトリ直下＝テーマ中身
 
           # ===== リモート設定 =====
-          remote_path: public_html/volitionmagazine.com/wp-content/themes/my-simple-theme/
+          remote_path: public_html/umarekawari.online/wp-content/themes/my-simple-theme/
+# ↑ volitionmagazine.com → umarekawari.online に変更
           # ↑ 【変更必須】
           #   - ドメイン名
           #   - テーマフォルダ名
