@@ -83,4 +83,5 @@ jobs:
             --exclude='node_modules/'
             --exclude='.env'
             --exclude='.DS_Store'
+            --exclude='*.py'
           # ↑ 【通常固定】テーマに不要なものを除外
