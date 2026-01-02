@@ -419,3 +419,197 @@ function fuyohin_enqueue_scripts() {
     }
 }
 add_action('wp_enqueue_scripts', 'fuyohin_enqueue_scripts');
+
+// ===========================
+// ランキング管理画面
+// ===========================
+
+function fuyohin_add_ranking_management_page() {
+    add_submenu_page(
+        'edit.php?post_type=company',
+        'ランキング管理',
+        'ランキング管理',
+        'manage_options',
+        'ranking-management',
+        'fuyohin_ranking_management_page'
+    );
+}
+add_action('admin_menu', 'fuyohin_add_ranking_management_page');
+
+function fuyohin_ranking_management_page() {
+    // カテゴリ選択
+    $current_category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : 'overall';
+    
+    // ランキング保存処理
+    if (isset($_POST['save_ranking']) && check_admin_referer('save_ranking_order', 'ranking_nonce')) {
+        $ranking_data = json_decode(stripslashes($_POST['ranking_order']), true);
+        
+        if (is_array($ranking_data)) {
+            foreach ($ranking_data as $index => $company_id) {
+                update_post_meta($company_id, '_ranking_position', $index + 1);
+                update_post_meta($company_id, '_ranking_category', $current_category);
+            }
+            echo '<div class="notice notice-success"><p>ランキングを保存しました。</p></div>';
+        }
+    }
+    
+    // 現在のランキング取得
+    $args = array(
+        'post_type' => 'company',
+        'posts_per_page' => -1,
+        'meta_key' => '_ranking_position',
+        'orderby' => 'meta_value_num',
+        'order' => 'ASC',
+        'meta_query' => array(
+            array(
+                'key' => '_ranking_category',
+                'value' => $current_category,
+            ),
+        ),
+    );
+    $ranked_companies = new WP_Query($args);
+    
+    // ランキングに含まれていない業者
+    $all_companies = get_posts(array(
+        'post_type' => 'company',
+        'posts_per_page' => -1,
+        'post__not_in' => wp_list_pluck($ranked_companies->posts, 'ID'),
+    ));
+    
+    ?>
+    <div class="wrap">
+        <h1>ランキング管理</h1>
+        
+        <!-- カテゴリタブ -->
+        <h2 class="nav-tab-wrapper">
+            <a href="?post_type=company&page=ranking-management&category=overall" class="nav-tab <?php echo $current_category === 'overall' ? 'nav-tab-active' : ''; ?>">総合ランキング</a>
+            <a href="?post_type=company&page=ranking-management&category=price" class="nav-tab <?php echo $current_category === 'price' ? 'nav-tab-active' : ''; ?>">料金が安い</a>
+            <a href="?post_type=company&page=ranking-management&category=speed" class="nav-tab <?php echo $current_category === 'speed' ? 'nav-tab-active' : ''; ?>">対応が早い</a>
+            <a href="?post_type=company&page=ranking-management&category=service" class="nav-tab <?php echo $current_category === 'service' ? 'nav-tab-active' : ''; ?>">サービス品質</a>
+        </h2>
+        
+        <div style="margin-top: 20px;">
+            <p>ドラッグ&ドロップで業者の順位を変更できます。</p>
+            
+            <form method="post" id="ranking-form">
+                <?php wp_nonce_field('save_ranking_order', 'ranking_nonce'); ?>
+                <input type="hidden" name="save_ranking" value="1">
+                <input type="hidden" name="ranking_order" id="ranking-order-input">
+                
+                <div style="display: flex; gap: 40px; margin-top: 20px;">
+                    <!-- 現在のランキング -->
+                    <div style="flex: 1;">
+                        <h3>現在のランキング</h3>
+                        <ul id="ranking-list" style="list-style: none; padding: 0; min-height: 100px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
+                            <?php 
+                            if ($ranked_companies->have_posts()) :
+                                $rank = 1;
+                                while ($ranked_companies->have_posts()) : $ranked_companies->the_post();
+                                    $rating = get_post_meta(get_the_ID(), '_company_rating', true);
+                            ?>
+                                <li class="ranking-item" data-id="<?php echo get_the_ID(); ?>" style="background: white; padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; align-items: center; gap: 10px;">
+                                    <span class="rank-number" style="font-size: 24px; font-weight: bold; color: #0073aa; min-width: 40px;"><?php echo $rank; ?></span>
+                                    <div style="flex: 1;">
+                                        <strong><?php the_title(); ?></strong>
+                                        <?php if ($rating) : ?>
+                                            <span style="color: #fbbf24; margin-left: 10px;">★ <?php echo number_format($rating, 1); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="dashicons dashicons-menu" style="color: #999;"></span>
+                                </li>
+                            <?php 
+                                $rank++;
+                                endwhile;
+                                wp_reset_postdata();
+                            else :
+                            ?>
+                                <li style="padding: 20px; text-align: center; color: #999;">まだランキングに業者が登録されていません。</li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                    
+                    <!-- 未ランクの業者 -->
+                    <div style="flex: 1;">
+                        <h3>未ランクの業者</h3>
+                        <ul id="unranked-list" style="list-style: none; padding: 0; min-height: 100px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
+                            <?php 
+                            if (!empty($all_companies)) :
+                                foreach ($all_companies as $company) :
+                                    $rating = get_post_meta($company->ID, '_company_rating', true);
+                            ?>
+                                <li class="ranking-item" data-id="<?php echo $company->ID; ?>" style="background: white; padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; align-items: center; gap: 10px;">
+                                    <div style="flex: 1;">
+                                        <strong><?php echo esc_html($company->post_title); ?></strong>
+                                        <?php if ($rating) : ?>
+                                            <span style="color: #fbbf24; margin-left: 10px;">★ <?php echo number_format($rating, 1); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="dashicons dashicons-menu" style="color: #999;"></span>
+                                </li>
+                            <?php 
+                                endforeach;
+                            else :
+                            ?>
+                                <li style="padding: 20px; text-align: center; color: #999;">すべての業者がランキングに含まれています。</li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="submit">
+                    <button type="submit" class="button button-primary button-large">ランキングを保存</button>
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        // Sortable.jsの代わりにjQuery UI Sortableを使用
+        $('#ranking-list, #unranked-list').sortable({
+            connectWith: '.ranking-item',
+            placeholder: 'sortable-placeholder',
+            handle: '.dashicons-menu',
+            update: function(event, ui) {
+                updateRankNumbers();
+            }
+        }).disableSelection();
+        
+        function updateRankNumbers() {
+            $('#ranking-list .ranking-item').each(function(index) {
+                $(this).find('.rank-number').text(index + 1);
+            });
+        }
+        
+        $('#ranking-form').on('submit', function() {
+            var rankingOrder = [];
+            $('#ranking-list .ranking-item').each(function() {
+                rankingOrder.push($(this).data('id'));
+            });
+            $('#ranking-order-input').val(JSON.stringify(rankingOrder));
+        });
+    });
+    </script>
+    
+    <style>
+    .sortable-placeholder {
+        background: #e3f2fd;
+        border: 2px dashed #2196f3;
+        height: 60px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    .ranking-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    </style>
+    <?php
+}
+
+// 管理画面でjQuery UIを読み込む
+function fuyohin_admin_enqueue_scripts($hook) {
+    if ($hook === 'company_page_ranking-management') {
+        wp_enqueue_script('jquery-ui-sortable');
+    }
+}
+add_action('admin_enqueue_scripts', 'fuyohin_admin_enqueue_scripts');
