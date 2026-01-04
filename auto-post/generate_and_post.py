@@ -105,7 +105,7 @@ def generate_article(keyword):
     
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4.1-mini",
             messages=[
                 {"role": "system", "content": "あなたは不用品回収業界の専門ライターです。"},
                 {"role": "user", "content": prompt}
