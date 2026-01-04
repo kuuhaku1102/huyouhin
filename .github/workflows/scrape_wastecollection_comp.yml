@@ -1,0 +1,48 @@
+name: Scrape Wastecollection Comparison Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 19 * * 0'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+          playwright install-deps
+
+      - name: Run scraping script
+        run: |
+          cd scripts
+          python scrape_wastecollection_comp.py
+
+      - name: Upload Excel file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuyouhincenter-wastecollection-comp-${{ github.run_number }}
+          path: scripts/fuyouhincenter_wastecollection_comp.xlsx
+          retention-days: 30
+
+      - name: Commit and push Excel file (optional)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add scripts/fuyouhincenter_wastecollection_comp.xlsx || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update wastecollection-comp data [automated]" && git push) || true
