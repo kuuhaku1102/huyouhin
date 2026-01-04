@@ -190,3 +190,56 @@ print(df.groupby("都道府県")["総合評価_数値"].mean())
 ## ライセンス
 
 このスクリプトはMITライセンスの下で提供されます。
+
+---
+
+## 比較ページ（wastecollection-comp）スクレイピング
+
+`https://fuyouhincenter.jp/wastecollection-comp/` の全ページを巡回し、
+各業者カード（`div.gyosha_results_container`）の情報をExcelに出力します。
+
+### 追加スクリプト
+
+```
+scripts/
+└── scrape_wastecollection_comp.py
+```
+
+### 出力ファイル
+
+- **ファイル名**: `fuyouhincenter_wastecollection_comp.xlsx`
+- **形式**: Excel (.xlsx)
+
+### 取得カラム
+
+| 列名 | 内容 |
+|------|------|
+| ページ | ページ番号（1,2,3...） |
+| 順位 | ページ内の表示順 |
+| 会社ID | `div.gyosha_results_container` の `id` |
+| 不用品回収業者名 | 業者名 |
+| 会社URL | 詳細ページURL |
+| ロゴ画像URL | 画像URL |
+| ロゴ画像ALT | 画像代替テキスト |
+| 総合評価（星） | `data-rate` の値 |
+| 総合評価（テキスト） | 表示されている数値評価文字列 |
+| 口コミ件数 | 口コミ数 |
+| 概要 | 説明文 |
+| サービス内容 | 箇条書き（/区切り） |
+| 対応エリア | 都道府県一覧（/区切り） |
+| 料金 | 料金プラン（/区切り） |
+| 口コミタイトル | 最新口コミの見出し |
+| 口コミユーザー | 例：60代・女性 |
+| 口コミ評価 | 最新口コミの評価 |
+| 口コミ内訳 | 評価の内訳文字列 |
+| 口コミ本文 | 最新口コミ本文 |
+| 口コミ画像URL | 口コミの画像URL |
+
+### 実行方法
+
+```bash
+cd scripts
+pip install -r requirements.txt
+playwright install chromium
+python scrape_wastecollection_comp.py
+```
