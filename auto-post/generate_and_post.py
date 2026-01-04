@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 import requests
 from openai import OpenAI
+import markdown
 
 # 設定
 SCRIPT_DIR = Path(__file__).parent
@@ -212,8 +213,22 @@ def generate_article(keyword):
         log_message(f"AI記事生成エラー: {str(e)}")
         raise
 
+def markdown_to_html(md_text):
+    """MarkdownをHTMLに変換"""
+    # markdown拡張機能を有効化
+    html = markdown.markdown(
+        md_text,
+        extensions=[
+            'extra',  # テーブル、脚注、略語などをサポート
+            'nl2br',  # 改行を<br>に変換
+            'sane_lists',  # リストの処理を改善
+            'toc',  # 目次生成
+        ]
+    )
+    return html
+
 def format_article_content(article_json):
-    """記事データを整形"""
+    """記事データを整形してHTMLに変換"""
     content = article_json.get("content", "")
     
     # FAQセクションを追加
@@ -237,7 +252,10 @@ def format_article_content(article_json):
     content += "当サイトでは、複数の優良業者から一括見積もりを取ることができます。簡単30秒で最適な業者が見つかります。\n\n"
     content += "[無料見積もりはこちら](/quote)\n"
     
-    return content
+    # MarkdownをHTMLに変換
+    html_content = markdown_to_html(content)
+    
+    return html_content
 
 def post_to_wordpress(article_json, keyword):
     """WordPressに記事を投稿"""
