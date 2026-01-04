@@ -87,7 +87,7 @@
         $table_name = $wpdb->prefix . 'comp2';
         $media_table = $wpdb->prefix . 'comp2_media';
         
-        // wp_comp2テーブルからTOP5を取得
+        // wp_comp2テーブルからTOP6を取得
         $companies = $wpdb->get_results("
             SELECT 
                 c.*,
@@ -96,7 +96,7 @@
             LEFT JOIN {$media_table} m ON c.company_id = m.company_id
             WHERE c.total_rating_star IS NOT NULL
             ORDER BY CAST(c.total_rating_star AS DECIMAL(3,2)) DESC
-            LIMIT 5
+            LIMIT 6
         ");
         
         if (!empty($companies)) :
@@ -150,10 +150,8 @@
                             
                             <?php if (!empty($company->price_info)) : ?>
                                 <div class="company-price">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8 1V15M11 3H6.5C5.83696 3 5.20107 3.26339 4.73223 3.73223C4.26339 4.20107 4 4.83696 4 5.5C4 6.16304 4.26339 6.79893 4.73223 7.26777C5.20107 7.73661 5.83696 8 6.5 8H9.5C10.163 8 10.7989 8.26339 11.2678 8.73223C11.7366 9.20107 12 9.83696 12 10.5C12 11.163 11.7366 11.7989 11.2678 12.2678C10.7989 12.7366 10.163 13 9.5 13H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    <span><?php echo esc_html($company->price_info); ?></span>
+                                    <span class="price-label">料金:</span>
+                                    <span class="price-value"><?php echo esc_html($company->price_info); ?></span>
                                 </div>
                             <?php endif; ?>
                             

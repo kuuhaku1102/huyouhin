@@ -683,7 +683,24 @@ section {
   color: var(--color-text);
 }
 
-.card-content .company-price,
+.card-content .company-price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.card-content .company-price .price-label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.card-content .company-price .price-value {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 .card-content .company-areas {
   display: flex;
   align-items: center;
@@ -693,7 +710,6 @@ section {
   font-size: 0.875rem;
 }
 
-.card-content .company-price svg,
 .card-content .company-areas svg {
   flex-shrink: 0;
   color: var(--color-primary);
