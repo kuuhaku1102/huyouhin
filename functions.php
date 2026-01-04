@@ -876,3 +876,171 @@ function get_company_local_logo_url($company_id) {
     
     return false;
 }
+
+
+// ===========================
+// ランキングページ自動作成
+// ===========================
+
+function create_rankings_page() {
+    // すでに存在するか確認
+    $page = get_page_by_path('rankings');
+    
+    if (!$page) {
+        $page_id = wp_insert_post(array(
+            'post_title' => 'おすすめランキング',
+            'post_name' => 'rankings',
+            'post_status' => 'publish',
+            'post_type' => 'page',
+            'post_content' => '',
+            'page_template' => 'page-rankings.php'
+        ));
+        
+        if ($page_id) {
+            update_post_meta($page_id, '_wp_page_template', 'page-rankings.php');
+        }
+    }
+}
+add_action('after_switch_theme', 'create_rankings_page');
+
+// ===========================
+// wp_comp2 → company投稿タイプ 自動同期
+// ===========================
+
+// 管理画面にデータ同期ページを追加
+add_action('admin_menu', 'add_data_sync_page');
+function add_data_sync_page() {
+    add_submenu_page(
+        'edit.php?post_type=company',
+        'データ同期',
+        'データ同期',
+        'manage_options',
+        'sync-company-data',
+        'data_sync_page_callback'
+    );
+}
+
+function data_sync_page_callback() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'comp2';
+    
+    // テーブルが存在するか確認
+    $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+    
+    ?>
+    <div class="wrap">
+        <h1>業者データ同期</h1>
+        
+        <?php if (!$table_exists) : ?>
+            <div class="notice notice-error">
+                <p>データベーステーブル <code><?php echo esc_html($table_name); ?></code> が見つかりません。</p>
+                <p>スクレイピングを実行してデータをインポートしてください。</p>
+            </div>
+        <?php else : ?>
+            <p><code><?php echo esc_html($table_name); ?></code> テーブルのデータを業者情報（company投稿タイプ）に同期します。</p>
+            <p><strong>注意:</strong> 既存の業者データは上書きされます。</p>
+            
+            <form method="post" action="">
+                <?php wp_nonce_field('sync_company_data_action', 'sync_company_data_nonce'); ?>
+                <input type="submit" name="sync_company_data" class="button button-primary button-large" value="データを同期" />
+            </form>
+            
+            <?php
+            if (isset($_POST['sync_company_data']) && check_admin_referer('sync_company_data_action', 'sync_company_data_nonce')) {
+                sync_company_data_from_db();
+            }
+            ?>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+
+function sync_company_data_from_db() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'comp2';
+    $media_table = $wpdb->prefix . 'comp2_media';
+    
+    // データ取得
+    $companies = $wpdb->get_results("
+        SELECT
+            c.*,
+            m.attachment_id as logo_attachment_id
+        FROM {$table_name} c
+        LEFT JOIN {$media_table} m ON c.company_id = m.company_id
+        ORDER BY c.ranking ASC
+    ");
+    
+    if (empty($companies)) {
+        echo '<div class="notice notice-warning"><p>同期するデータがありません。</p></div>';
+        return;
+    }
+    
+    $synced = 0;
+    $errors = 0;
+    
+    echo '<div class="notice notice-info"><p>同期開始...</p></div>';
+    echo '<ul style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f9f9f9;">';
+    
+    foreach ($companies as $company) {
+        echo '<li>処理中: ' . esc_html($company->company_name) . '...';
+        flush();
+        
+        // company_idで既存投稿を検索
+        $existing_post = $wpdb->get_var($wpdb->prepare(
+            "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_db_id' AND meta_value = %s",
+            $company->company_id
+        ));
+        
+        // 投稿データ
+        $post_data = array(
+            'post_title' => $company->company_name,
+            'post_content' => $company->summary,
+            'post_status' => 'publish',
+            'post_type' => 'company',
+        );
+        
+        if ($existing_post) {
+            // 更新
+            $post_data['ID'] = $existing_post;
+            $post_id = wp_update_post($post_data);
+        } else {
+            // 新規作成
+            $post_id = wp_insert_post($post_data);
+        }
+        
+        if (is_wp_error($post_id) || !$post_id) {
+            $errors++;
+            echo ' <span style="color: red;">✗ 失敗</span></li>';
+            continue;
+        }
+        
+        // メタフィールドを保存（カラムマッピング）
+        update_post_meta($post_id, '_company_db_id', $company->company_id);
+        update_post_meta($post_id, '_company_rating', $company->total_rating_star);
+        update_post_meta($post_id, '_company_rating_text', $company->total_rating_text);
+        update_post_meta($post_id, '_company_review_count', $company->review_count);
+        update_post_meta($post_id, '_company_phone', ''); // DBにない場合
+        update_post_meta($post_id, '_company_email', ''); // DBにない場合
+        update_post_meta($post_id, '_company_website', $company->official_url);
+        update_post_meta($post_id, '_company_areas', $company->service_area);
+        update_post_meta($post_id, '_company_price_range', $company->price_info);
+        update_post_meta($post_id, '_company_service_content', $company->service_content);
+        update_post_meta($post_id, '_company_recommended_points', $company->recommended_points);
+        update_post_meta($post_id, '_ranking_position', $company->ranking);
+        update_post_meta($post_id, '_ranking_category', 'overall');
+        
+        // ロゴをアイキャッチ画像に設定
+        if ($company->logo_attachment_id) {
+            set_post_thumbnail($post_id, $company->logo_attachment_id);
+        }
+        
+        $synced++;
+        echo ' <span style="color: green;">✓ 成功</span></li>';
+        flush();
+    }
+    
+    echo '</ul>';
+    echo '<div class="notice notice-success"><p>';
+    echo '完了: ' . $synced . '件同期 / ' . $errors . '件エラー';
+    echo '</p></div>';
+}
