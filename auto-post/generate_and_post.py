@@ -163,11 +163,6 @@ def post_to_wordpress(title, content, keyword):
         "content": content,
         "status": "publish",  # "draft" にすると下書き保存
         "categories": [],  # カテゴリーIDを指定可能
-        "tags": keyword.split(),  # キーワードをタグとして追加
-        "meta": {
-            "_yoast_wpseo_focuskw": keyword,  # Yoast SEO用（プラグインがあれば）
-            "_yoast_wpseo_metadesc": f"{keyword}について詳しく解説します。"
-        }
     }
     
     log_message("WordPressへの投稿を開始...")
