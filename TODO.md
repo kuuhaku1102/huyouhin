@@ -65,3 +65,17 @@
 - [x] Playwrightを使用したスクレイピングスクリプト（.py）の作成
 - [x] GitHub Actionsワークフロー（.yml）の作成
 - [x] requirements.txtの作成
+
+## バグ修正
+- [x] GitHub ActionsでのPlaywright依存関係インストールエラーを修正
+
+## ロゴ管理機能
+- [x] 外部URLからメディアライブラリへの画像インポート機能
+- [x] 管理画面に一括インポートページを追加
+- [x] wp_comp2_media テーブルでattachment_idを管理
+- [x] テンプレートでローカル画像を表示
+
+## DBカラム表示機能
+- [x] wp_comp2テーブルからデータ取得
+- [x] ランキングページでの詳細情報表示
+- [ ] 業者詳細ページの作成

@@ -697,3 +697,182 @@ function fuyohin_insert_prefectures() {
     }
 }
 add_action('init', 'fuyohin_insert_prefectures');
+
+// ===========================
+// ロゴ画像インポート機能
+// ===========================
+
+// 外部URLからメディアライブラリに画像をインポート
+function import_logo_from_url($image_url, $company_id, $company_name) {
+    if (empty($image_url)) {
+        return false;
+    }
+    
+    require_once(ABSPATH . 'wp-admin/includes/media.php');
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    
+    // 画像をダウンロード
+    $tmp = download_url($image_url);
+    
+    if (is_wp_error($tmp)) {
+        return false;
+    }
+    
+    $file_array = array(
+        'name' => basename($image_url),
+        'tmp_name' => $tmp
+    );
+    
+    // メディアライブラリにアップロード
+    $attachment_id = media_handle_sideload($file_array, 0, $company_name . ' ロゴ');
+    
+    @unlink($file_array['tmp_name']);
+    
+    if (is_wp_error($attachment_id)) {
+        return false;
+    }
+    
+    return $attachment_id;
+}
+
+// 管理画面にロゴインポートページを追加
+add_action('admin_menu', 'add_logo_import_page');
+function add_logo_import_page() {
+    add_submenu_page(
+        'edit.php?post_type=company',
+        'ロゴ一括インポート',
+        'ロゴインポート',
+        'manage_options',
+        'import-logos',
+        'logo_import_page_callback'
+    );
+}
+
+function logo_import_page_callback() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'comp2';
+    
+    // テーブルが存在するか確認
+    $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+    
+    ?>
+    <div class="wrap">
+        <h1>ロゴ画像一括インポート</h1>
+        
+        <?php if (!$table_exists) : ?>
+            <div class="notice notice-error">
+                <p>データベーステーブル <code><?php echo esc_html($table_name); ?></code> が見つかりません。</p>
+                <p>スクレイピングスクリプトを実行してデータをインポートしてください。</p>
+            </div>
+        <?php else : ?>
+            <p><code><?php echo esc_html($table_name); ?></code> テーブルの logo_image_url からロゴ画像をメディアライブラリにインポートします。</p>
+            
+            <form method="post" action="">
+                <?php wp_nonce_field('import_logos_action', 'import_logos_nonce'); ?>
+                <input type="submit" name="import_logos" class="button button-primary button-large" value="ロゴをインポート" />
+            </form>
+            
+            <?php
+            if (isset($_POST['import_logos']) && check_admin_referer('import_logos_action', 'import_logos_nonce')) {
+                import_all_company_logos_from_db();
+            }
+            ?>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+
+function import_all_company_logos_from_db() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'comp2';
+    $media_table = $wpdb->prefix . 'comp2_media';
+    
+    // メディア管理テーブルがなければ作成
+    $wpdb->query("
+        CREATE TABLE IF NOT EXISTS {$media_table} (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            company_id VARCHAR(50) NOT NULL UNIQUE,
+            attachment_id BIGINT(20) NOT NULL,
+            original_url TEXT,
+            imported_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ");
+    
+    // データ取得
+    $companies = $wpdb->get_results("
+        SELECT company_id, company_name, logo_image_url
+        FROM {$table_name}
+        WHERE logo_image_url IS NOT NULL AND logo_image_url != ''
+    ");
+    
+    if (empty($companies)) {
+        echo '<div class="notice notice-warning"><p>インポートするロゴがありません。</p></div>';
+        return;
+    }
+    
+    $imported = 0;
+    $skipped = 0;
+    $errors = 0;
+    
+    echo '<div class="notice notice-info"><p>インポート開始...</p></div>';
+    echo '<ul style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f9f9f9;">';
+    
+    foreach ($companies as $company) {
+        // すでにインポート済みか確認
+        $existing = $wpdb->get_var($wpdb->prepare(
+            "SELECT attachment_id FROM {$media_table} WHERE company_id = %s",
+            $company->company_id
+        ));
+        
+        if ($existing) {
+            $skipped++;
+            echo '<li style="color: #999;">• スキップ: ' . esc_html($company->company_name) . ' (インポート済み)</li>';
+            continue;
+        }
+        
+        echo '<li>処理中: ' . esc_html($company->company_name) . '...';
+        flush();
+        
+        $attachment_id = import_logo_from_url($company->logo_image_url, $company->company_id, $company->company_name);
+        
+        if ($attachment_id) {
+            // メディア管理テーブルに保存
+            $wpdb->insert($media_table, array(
+                'company_id' => $company->company_id,
+                'attachment_id' => $attachment_id,
+                'original_url' => $company->logo_image_url,
+            ));
+            
+            $imported++;
+            echo ' <span style="color: green;">✓ 成功</span></li>';
+        } else {
+            $errors++;
+            echo ' <span style="color: red;">✗ 失敗</span></li>';
+        }
+        
+        flush();
+    }
+    
+    echo '</ul>';
+    echo '<div class="notice notice-success"><p>';
+    echo '完了: ' . $imported . '件インポート / ' . $skipped . '件スキップ / ' . $errors . '件エラー';
+    echo '</p></div>';
+}
+
+// カスタムテーブルからローカル画像URLを取得
+function get_company_local_logo_url($company_id) {
+    global $wpdb;
+    $media_table = $wpdb->prefix . 'comp2_media';
+    
+    $logo_id = $wpdb->get_var($wpdb->prepare(
+        "SELECT attachment_id FROM {$media_table} WHERE company_id = %s",
+        $company_id
+    ));
+    
+    if ($logo_id) {
+        return wp_get_attachment_image_url($logo_id, 'medium');
+    }
+    
+    return false;
+}
