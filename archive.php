@@ -3,33 +3,31 @@
 <!-- Column Archive Hero -->
 <section class="column-hero">
     <div class="container">
-        <h1 class="hero-title">不用品回収コラム</h1>
-        <p class="hero-subtitle">不用品回収に関する役立つ情報をお届けします</p>
+        <?php if (is_category()) : ?>
+            <h1 class="hero-title">カテゴリー: <?php single_cat_title(); ?></h1>
+            <?php if (category_description()) : ?>
+                <p class="hero-subtitle"><?php echo category_description(); ?></p>
+            <?php endif; ?>
+        <?php elseif (is_tag()) : ?>
+            <h1 class="hero-title">タグ: <?php single_tag_title(); ?></h1>
+            <?php if (tag_description()) : ?>
+                <p class="hero-subtitle"><?php echo tag_description(); ?></p>
+            <?php endif; ?>
+        <?php elseif (is_date()) : ?>
+            <h1 class="hero-title"><?php the_archive_title(); ?></h1>
+        <?php else : ?>
+            <h1 class="hero-title">不用品回収コラム</h1>
+            <p class="hero-subtitle">不用品回収に関する役立つ情報をお届けします</p>
+        <?php endif; ?>
     </div>
 </section>
 
 <!-- Column List Section -->
 <section class="column-list-section">
     <div class="container">
-        <?php
-        // ページネーション用のパラメータ
-        $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
-        
-        // 投稿を取得
-        $args = array(
-            'post_type' => 'post',
-            'posts_per_page' => 12,
-            'paged' => $paged,
-            'orderby' => 'date',
-            'order' => 'DESC',
-        );
-        
-        $column_query = new WP_Query($args);
-        
-        if ($column_query->have_posts()) :
-        ?>
+        <?php if (have_posts()) : ?>
             <div class="column-grid">
-                <?php while ($column_query->have_posts()) : $column_query->the_post(); ?>
+                <?php while (have_posts()) : the_post(); ?>
                     <article class="column-card">
                         <?php if (has_post_thumbnail()) : ?>
                             <div class="column-thumbnail">
@@ -83,12 +81,10 @@
             </div>
             
             <!-- Pagination -->
-            <?php if ($column_query->max_num_pages > 1) : ?>
+            <?php if (paginate_links()) : ?>
                 <div class="column-pagination">
                     <?php
                     echo paginate_links(array(
-                        'total' => $column_query->max_num_pages,
-                        'current' => $paged,
                         'prev_text' => '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 前へ',
                         'next_text' => '次へ <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
                         'type' => 'list',
@@ -96,8 +92,6 @@
                     ?>
                 </div>
             <?php endif; ?>
-            
-            <?php wp_reset_postdata(); ?>
         <?php else : ?>
             <div class="no-posts">
                 <p>まだ記事がありません。</p>
