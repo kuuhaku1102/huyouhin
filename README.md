@@ -130,6 +130,136 @@
    - 左側から右側にドラッグしてランキングから除外
 4. 「ランキングを保存」ボタンをクリック
 
+### DBテーブル（wp_comp2）からランキング表示
+
+以下のコードを `front-page.php` に配置すると、`wp_comp2` テーブルの内容を順位順に表示できます。`NULL` の値は空で表示されます。  
+（※ `wp_` は環境により異なるため、`$wpdb->prefix` を利用）
+
+```php
+<?php
+global $wpdb;
+
+// テーブル名（wp_ は環境により変わるため $wpdb->prefix を使う）
+$table_name = $wpdb->prefix . 'comp2';
+
+// データ取得（順位順）
+$companies = $wpdb->get_results("
+    SELECT
+        ranking,
+        company_name,
+        logo_image_url,
+        total_rating_star,
+        total_rating_text,
+        review_count,
+        summary,
+        service_content,
+        service_area,
+        price_info,
+        recommended_points,
+        official_url
+    FROM {$table_name}
+    ORDER BY ranking ASC
+");
+?>
+
+<?php if (!empty($companies)) : ?>
+<section class="junk-ranking">
+    <h2>不用品回収業者ランキング</h2>
+
+    <?php foreach ($companies as $company) : ?>
+        <div class="junk-ranking-item">
+
+            <!-- 順位 -->
+            <div class="rank">
+                <?php echo esc_html($company->ranking); ?>位
+            </div>
+
+            <!-- ロゴ -->
+            <?php if (!empty($company->logo_image_url)) : ?>
+                <div class="logo">
+                    <img
+                        src="<?php echo esc_url($company->logo_image_url); ?>"
+                        alt="<?php echo esc_attr($company->company_name); ?>"
+                        loading="lazy"
+                    >
+                </div>
+            <?php endif; ?>
+
+            <!-- 会社名 -->
+            <h3 class="company-name">
+                <?php echo esc_html($company->company_name); ?>
+            </h3>
+
+            <!-- 評価 -->
+            <?php if (!is_null($company->total_rating_star)) : ?>
+                <div class="rating">
+                    :star: <?php echo esc_html($company->total_rating_star); ?>
+                    <span class="rating-text">
+                        <?php echo esc_html($company->total_rating_text ?? ''); ?>
+                    </span>
+                </div>
+            <?php endif; ?>
+
+            <!-- 概要 -->
+            <?php if (!empty($company->summary)) : ?>
+                <p class="summary">
+                    <?php echo esc_html($company->summary); ?>
+                </p>
+            <?php endif; ?>
+
+            <!-- サービス内容 -->
+            <?php if (!empty($company->service_content)) : ?>
+                <p class="service">
+                    <strong>サービス内容：</strong>
+                    <?php echo esc_html($company->service_content); ?>
+                </p>
+            <?php endif; ?>
+
+            <!-- 対応エリア -->
+            <?php if (!empty($company->service_area)) : ?>
+                <p class="area">
+                    <strong>対応エリア：</strong>
+                    <?php echo esc_html($company->service_area); ?>
+                </p>
+            <?php endif; ?>
+
+            <!-- 料金 -->
+            <?php if (!empty($company->price_info)) : ?>
+                <p class="price">
+                    <strong>料金：</strong>
+                    <?php echo esc_html($company->price_info); ?>
+                </p>
+            <?php endif; ?>
+
+            <!-- おすすめポイント -->
+            <?php if (!empty($company->recommended_points)) : ?>
+                <p class="recommend">
+                    <strong>おすすめポイント：</strong>
+                    <?php echo esc_html($company->recommended_points); ?>
+                </p>
+            <?php endif; ?>
+
+            <!-- 公式サイト -->
+            <?php if (!empty($company->official_url)) : ?>
+                <a
+                    href="<?php echo esc_url($company->official_url); ?>"
+                    class="official-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    公式サイトを見る
+                </a>
+            <?php endif; ?>
+
+        </div>
+    <?php endforeach; ?>
+
+</section>
+<?php else : ?>
+    <p>現在、表示できるデータがありません。</p>
+<?php endif; ?>
+```
+
 ### 見積もり依頼の確認
 
 1. 管理画面 → 見積もり依頼
