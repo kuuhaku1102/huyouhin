@@ -2050,42 +2050,6 @@ footer a:hover {
   transform: translateY(-8px);
 }
 
-.archive-card-image {
-  display: block;
-  height: 220px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  position: relative;
-}
-
-.archive-card-image::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%);
-}
-
-.archive-card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.archive-card:hover .archive-card-image img {
-  transform: scale(1.1) rotate(1deg);
-}
-
-.archive-card-image-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.8);
-}
-
 .archive-card-content {
   padding: 2rem;
 }
