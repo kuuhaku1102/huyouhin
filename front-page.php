@@ -83,77 +83,101 @@
         <h2 class="section-title">おすすめ業者ランキング</h2>
         
         <?php
-        $args = array(
-            'post_type' => 'company',
-            'posts_per_page' => 3,
-            'meta_key' => '_ranking_position',
-            'orderby' => 'meta_value_num',
-            'order' => 'ASC',
-            'meta_query' => array(
-                array(
-                    'key' => '_ranking_category',
-                    'value' => 'overall',
-                ),
-            ),
-        );
-        $companies = new WP_Query($args);
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'comp2';
+        $media_table = $wpdb->prefix . 'comp2_media';
         
-        if ($companies->have_posts()) :
+        // wp_comp2テーブルからTOP5を取得
+        $companies = $wpdb->get_results("
+            SELECT 
+                c.*,
+                m.attachment_id
+            FROM {$table_name} c
+            LEFT JOIN {$media_table} m ON c.company_id = m.company_id
+            WHERE c.total_rating_star IS NOT NULL
+            ORDER BY CAST(c.total_rating_star AS DECIMAL(3,2)) DESC
+            LIMIT 5
+        ");
+        
+        if (!empty($companies)) :
             $rank = 1;
         ?>
-            <div class="ranking-cards">
-                <?php while ($companies->have_posts()) : $companies->the_post(); 
-                    $rating = get_post_meta(get_the_ID(), '_company_rating', true);
-                    $price_range = get_post_meta(get_the_ID(), '_company_price_range', true);
-                    $areas = get_post_meta(get_the_ID(), '_company_areas', true);
+            <div class="top-ranking-cards">
+                <?php foreach ($companies as $company) : 
+                    // ロゴURLを取得
+                    $logo_url = '';
+                    if ($company->attachment_id) {
+                        $logo_url = wp_get_attachment_image_url($company->attachment_id, 'medium');
+                    }
+                    if (!$logo_url && !empty($company->logo_image_url)) {
+                        $logo_url = $company->logo_image_url;
+                    }
+                    
+                    $rating = floatval($company->total_rating_star);
                 ?>
-                    <div class="ranking-card rank-<?php echo $rank; ?>">
-                        <div class="rank-badge">
+                    <div class="top-ranking-card rank-<?php echo $rank; ?>">
+                        <div class="rank-badge-top">
                             <span class="rank-number"><?php echo $rank; ?></span>
-                            <span class="rank-label">位</span>
                         </div>
                         
-                        <?php if (has_post_thumbnail()) : ?>
-                            <div class="company-image">
-                                <?php the_post_thumbnail('medium'); ?>
+                        <?php if (!empty($logo_url)) : ?>
+                            <div class="company-logo">
+                                <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($company->company_name); ?>">
                             </div>
                         <?php endif; ?>
                         
-                        <div class="company-info">
-                            <h3 class="company-name"><?php the_title(); ?></h3>
+                        <div class="card-content">
+                            <h3 class="company-name"><?php echo esc_html($company->company_name); ?></h3>
                             
-                            <?php if ($rating) : ?>
+                            <?php if ($rating > 0) : ?>
                                 <div class="company-rating">
-                                    <span class="rating-stars"><?php echo str_repeat('★', floor($rating)) . str_repeat('☆', 5 - floor($rating)); ?></span>
+                                    <div class="rating-stars">
+                                        <?php 
+                                        for ($i = 1; $i <= 5; $i++) {
+                                            if ($i <= floor($rating)) {
+                                                echo '<span class="star filled">★</span>';
+                                            } elseif ($i - 0.5 <= $rating) {
+                                                echo '<span class="star half">★</span>';
+                                            } else {
+                                                echo '<span class="star empty">☆</span>';
+                                            }
+                                        }
+                                        ?>
+                                    </div>
                                     <span class="rating-value"><?php echo number_format($rating, 1); ?></span>
                                 </div>
                             <?php endif; ?>
                             
-                            <?php if ($price_range) : ?>
+                            <?php if (!empty($company->price_info)) : ?>
                                 <div class="company-price">
-                                    <span class="price-label">料金目安:</span>
-                                    <span class="price-value"><?php echo esc_html($price_range); ?></span>
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 1V15M11 3H6.5C5.83696 3 5.20107 3.26339 4.73223 3.73223C4.26339 4.20107 4 4.83696 4 5.5C4 6.16304 4.26339 6.79893 4.73223 7.26777C5.20107 7.73661 5.83696 8 6.5 8H9.5C10.163 8 10.7989 8.26339 11.2678 8.73223C11.7366 9.20107 12 9.83696 12 10.5C12 11.163 11.7366 11.7989 11.2678 12.2678C10.7989 12.7366 10.163 13 9.5 13H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span><?php echo esc_html($company->price_info); ?></span>
                                 </div>
                             <?php endif; ?>
                             
-                            <?php if ($areas) : ?>
+                            <?php if (!empty($company->service_area)) : ?>
                                 <div class="company-areas">
-                                    <span class="areas-label">対応エリア:</span>
-                                    <span class="areas-value"><?php echo esc_html($areas); ?></span>
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14 6.66667C14 11.3333 8 15.3333 8 15.3333C8 15.3333 2 11.3333 2 6.66667C2 5.07536 2.63214 3.54926 3.75736 2.42404C4.88258 1.29882 6.40869 0.666672 8 0.666672C9.59131 0.666672 11.1174 1.29882 12.2426 2.42404C13.3679 3.54926 14 5.07536 14 6.66667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8 8.66667C9.10457 8.66667 10 7.77124 10 6.66667C10 5.5621 9.10457 4.66667 8 4.66667C6.89543 4.66667 6 5.5621 6 6.66667C6 7.77124 6.89543 8.66667 8 8.66667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span><?php echo esc_html(mb_substr($company->service_area, 0, 30)); ?><?php echo mb_strlen($company->service_area) > 30 ? '...' : ''; ?></span>
                                 </div>
                             <?php endif; ?>
                             
-                            <div class="company-excerpt">
-                                <?php the_excerpt(); ?>
-                            </div>
-                            
-                            <a href="<?php the_permalink(); ?>" class="btn btn-outline">詳細を見る</a>
+                            <a href="<?php echo home_url('/rankings/'); ?>" class="btn-card">
+                                詳細を見る
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 <?php 
                     $rank++;
-                endwhile; 
-                wp_reset_postdata();
+                endforeach;
                 ?>
             </div>
             
