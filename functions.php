@@ -1083,6 +1083,15 @@ function create_prefecture_pages() {
     }
 }
 add_action('after_switch_theme', 'create_prefecture_pages');
+add_action('init', 'create_prefecture_pages_on_init');
+
+function create_prefecture_pages_on_init() {
+    // 一度だけ実行するためのフラグチェック
+    if (get_option('prefecture_pages_created') !== 'yes') {
+        create_prefecture_pages();
+        update_option('prefecture_pages_created', 'yes');
+    }
+}
 
 // 管理画面に都道府県ページ作成ボタンを追加
 add_action('admin_menu', 'add_prefecture_pages_menu');

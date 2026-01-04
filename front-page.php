@@ -193,11 +193,48 @@
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="cta-section">
+<!-- Prefecture Links Section -->
+<section class="prefecture-section">
     <div class="container">
-        <h2 class="cta-title">まずは無料で見積もりを</h2>
-        <p class="cta-description">簡単30秒で複数の業者から見積もりを取得できます</p>
+        <h2 class="section-title">都道府県から業者を探す</h2>
+        <p class="section-description">お住まいの地域で利用できる不用品回収業者を探す</p>
+        
+        <?php
+        $prefecture_groups = array(
+            '北海道・東北' => array('北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'),
+            '関東' => array('茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県'),
+            '中部' => array('新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県', '三重県'),
+            '近畠' => array('滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県'),
+            '中国・四国' => array('鳥取県', '島根県', '岡山県', '広島県', '山口県', '徳島県', '香川県', '愛媛県', '高知県'),
+            '九州・沖縄' => array('福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県')
+        );
+        
+        foreach ($prefecture_groups as $region => $prefectures) :
+        ?>
+            <div class="prefecture-group">
+                <h3 class="prefecture-group-title"><?php echo esc_html($region); ?></h3>
+                <div class="prefecture-links">
+                    <?php
+                    foreach ($prefectures as $prefecture) {
+                        $page = get_page_by_title($prefecture, OBJECT, 'page');
+                        if ($page) {
+                            echo '<a href="' . get_permalink($page->ID) . '" class="prefecture-link">' . esc_html($prefecture) . '</a>';
+                        } else {
+                            echo '<span class="prefecture-link disabled">' . esc_html($prefecture) . '</span>';
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2 class="cta-title">今すぐ無料で見積もりを取りましょう</h2>
+        <p class="cta-description">複数の業者を比較して、最適な不用品回収業者を見つけましょう。</p>
         <a href="<?php echo home_url('/quote'); ?>" class="btn btn-primary btn-large">無料見積もりを取る</a>
     </div>
 </section>
