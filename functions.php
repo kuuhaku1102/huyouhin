@@ -65,7 +65,26 @@ function fuyohin_register_post_types() {
     ));
 
     // 口コミ
-    register_post_type('review', array(
+    // 都道府県タクソノミー
+register_taxonomy('prefecture', 'company', array(
+    'labels' => array(
+        'name' => '都道府県',
+        'singular_name' => '都道府県',
+        'search_items' => '都道府県を検索',
+        'all_items' => 'すべての都道府県',
+        'edit_item' => '都道府県を編集',
+        'update_item' => '都道府県を更新',
+        'add_new_item' => '新しい都道府県を追加',
+    ),
+    'hierarchical' => true,
+    'show_ui' => true,
+    'show_admin_column' => true,
+    'query_var' => true,
+    'rewrite' => array('slug' => 'area'),
+    'show_in_rest' => true,
+));
+
+register_post_type('review', array(
         'labels' => array(
             'name' => '口コミ',
             'singular_name' => '口コミ',
@@ -613,3 +632,68 @@ function fuyohin_admin_enqueue_scripts($hook) {
     }
 }
 add_action('admin_enqueue_scripts', 'fuyohin_admin_enqueue_scripts');
+
+// ===========================
+// 47都道府県の初期データ登録
+// ===========================
+
+function fuyohin_insert_prefectures() {
+    $prefectures = array(
+        '北海道' => array('地方' => '北海道地方'),
+        '青森県' => array('地方' => '東北地方'),
+        '岩手県' => array('地方' => '東北地方'),
+        '宮城県' => array('地方' => '東北地方'),
+        '秋田県' => array('地方' => '東北地方'),
+        '山形県' => array('地方' => '東北地方'),
+        '福島県' => array('地方' => '東北地方'),
+        '茨城県' => array('地方' => '関東地方'),
+        '栃木県' => array('地方' => '関東地方'),
+        '群馬県' => array('地方' => '関東地方'),
+        '埼玉県' => array('地方' => '関東地方'),
+        '千葉県' => array('地方' => '関東地方'),
+        '東京都' => array('地方' => '関東地方'),
+        '神奈川県' => array('地方' => '関東地方'),
+        '新潟県' => array('地方' => '中部地方'),
+        '富山県' => array('地方' => '中部地方'),
+        '石川県' => array('地方' => '中部地方'),
+        '福井県' => array('地方' => '中部地方'),
+        '山梨県' => array('地方' => '中部地方'),
+        '長野県' => array('地方' => '中部地方'),
+        '岐阜県' => array('地方' => '中部地方'),
+        '静岡県' => array('地方' => '中部地方'),
+        '愛知県' => array('地方' => '中部地方'),
+        '三重県' => array('地方' => '関西地方'),
+        '滋賀県' => array('地方' => '関西地方'),
+        '京都府' => array('地方' => '関西地方'),
+        '大阪府' => array('地方' => '関西地方'),
+        '兵庫県' => array('地方' => '関西地方'),
+        '奈良県' => array('地方' => '関西地方'),
+        '和歌山県' => array('地方' => '関西地方'),
+        '鳥取県' => array('地方' => '中国地方'),
+        '島根県' => array('地方' => '中国地方'),
+        '岡山県' => array('地方' => '中国地方'),
+        '広島県' => array('地方' => '中国地方'),
+        '山口県' => array('地方' => '中国地方'),
+        '徳島県' => array('地方' => '四国地方'),
+        '香川県' => array('地方' => '四国地方'),
+        '愛媛県' => array('地方' => '四国地方'),
+        '高知県' => array('地方' => '四国地方'),
+        '福岡県' => array('地方' => '九州・沖縄地方'),
+        '佐賀県' => array('地方' => '九州・沖縄地方'),
+        '長崎県' => array('地方' => '九州・沖縄地方'),
+        '熊本県' => array('地方' => '九州・沖縄地方'),
+        '大分県' => array('地方' => '九州・沖縄地方'),
+        '宮崎県' => array('地方' => '九州・沖縄地方'),
+        '鹿児島県' => array('地方' => '九州・沖縄地方'),
+        '沖縄県' => array('地方' => '九州・沖縄地方'),
+    );
+    
+    foreach ($prefectures as $name => $data) {
+        if (!term_exists($name, 'prefecture')) {
+            wp_insert_term($name, 'prefecture', array(
+                'description' => $data['地方'],
+            ));
+        }
+    }
+}
+add_action('init', 'fuyohin_insert_prefectures');
