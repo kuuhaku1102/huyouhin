@@ -752,6 +752,7 @@ function add_logo_import_page() {
 function logo_import_page_callback() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'comp2';
+    $media_table = $wpdb->prefix . 'comp2_media';
     
     // テーブルが存在するか確認
     $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
@@ -765,25 +766,76 @@ function logo_import_page_callback() {
                 <p>データベーステーブル <code><?php echo esc_html($table_name); ?></code> が見つかりません。</p>
                 <p>スクレイピングスクリプトを実行してデータをインポートしてください。</p>
             </div>
-        <?php else : ?>
-            <p><code><?php echo esc_html($table_name); ?></code> テーブルの logo_image_url からロゴ画像をメディアライブラリにインポートします。</p>
+        <?php else : 
+            // 全件数を取得
+            $total_count = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name} WHERE logo_image_url IS NOT NULL AND logo_image_url != ''");
+            $imported_count = $wpdb->get_var("SELECT COUNT(*) FROM {$media_table}");
+            $remaining = $total_count - $imported_count;
+            $batch_size = 10; // 一度に10件ずつ処理
+        ?>
+            <div class="logo-import-status">
+                <h2>インポート状況</h2>
+                <p><strong>全体:</strong> <?php echo $total_count; ?>件</p>
+                <p><strong>完了:</strong> <?php echo $imported_count; ?>件</p>
+                <p><strong>残り:</strong> <?php echo $remaining; ?>件</p>
+                
+                <?php if ($remaining > 0) : ?>
+                    <div class="notice notice-info">
+                        <p>⚠️ タイムアウトを防ぐため、<?php echo $batch_size; ?>件ずつインポートします。</p>
+                        <p>「次の<?php echo min($batch_size, $remaining); ?>件をインポート」ボタンを繰り返しクリックしてください。</p>
+                    </div>
+                <?php else : ?>
+                    <div class="notice notice-success">
+                        <p>✅ すべてのロゴのインポートが完了しました!</p>
+                    </div>
+                <?php endif; ?>
+            </div>
             
-            <form method="post" action="">
-                <?php wp_nonce_field('import_logos_action', 'import_logos_nonce'); ?>
-                <input type="submit" name="import_logos" class="button button-primary button-large" value="ロゴをインポート" />
-            </form>
+            <?php if ($remaining > 0) : ?>
+                <form method="post" action="" id="logo-import-form">
+                    <?php wp_nonce_field('import_logos_batch_action', 'import_logos_batch_nonce'); ?>
+                    <input type="submit" name="import_logos_batch" class="button button-primary button-large" value="次の<?php echo min($batch_size, $remaining); ?>件をインポート" />
+                    <input type="button" class="button" value="リセット" onclick="if(confirm('進行状況をリセットしますか?')) { window.location.href='<?php echo add_query_arg('reset_import', '1'); ?>'; }" />
+                </form>
+            <?php endif; ?>
             
             <?php
-            if (isset($_POST['import_logos']) && check_admin_referer('import_logos_action', 'import_logos_nonce')) {
-                import_all_company_logos_from_db();
+            // リセット処理
+            if (isset($_GET['reset_import'])) {
+                $wpdb->query("TRUNCATE TABLE {$media_table}");
+                echo '<div class="notice notice-success"><p>進行状況をリセットしました。</p></div>';
+                echo '<meta http-equiv="refresh" content="1">';
+            }
+            
+            // バッチインポート処理
+            if (isset($_POST['import_logos_batch']) && check_admin_referer('import_logos_batch_action', 'import_logos_batch_nonce')) {
+                import_logos_batch($batch_size);
+                echo '<meta http-equiv="refresh" content="1">';
             }
             ?>
         <?php endif; ?>
     </div>
+    
+    <style>
+    .logo-import-status {
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    .logo-import-status h2 {
+        margin-top: 0;
+    }
+    .logo-import-status p {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+    </style>
     <?php
 }
 
-function import_all_company_logos_from_db() {
+function import_logos_batch($batch_size = 10) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'comp2';
     $media_table = $wpdb->prefix . 'comp2_media';
@@ -799,38 +851,32 @@ function import_all_company_logos_from_db() {
         )
     ");
     
-    // データ取得
-    $companies = $wpdb->get_results("
-        SELECT company_id, company_name, logo_image_url
-        FROM {$table_name}
-        WHERE logo_image_url IS NOT NULL AND logo_image_url != ''
-    ");
+    // 実行時間を延長
+    set_time_limit(300); // 5分
+    
+    // 未インポートの業者を取得(バッチサイズ分)
+    $companies = $wpdb->get_results($wpdb->prepare("
+        SELECT c.company_id, c.company_name, c.logo_image_url
+        FROM {$table_name} c
+        LEFT JOIN {$media_table} m ON c.company_id = m.company_id
+        WHERE c.logo_image_url IS NOT NULL 
+        AND c.logo_image_url != ''
+        AND m.attachment_id IS NULL
+        LIMIT %d
+    ", $batch_size));
     
     if (empty($companies)) {
-        echo '<div class="notice notice-warning"><p>インポートするロゴがありません。</p></div>';
+        echo '<div class="notice notice-success"><p>✅ すべてのロゴのインポートが完了しました!</p></div>';
         return;
     }
     
     $imported = 0;
-    $skipped = 0;
     $errors = 0;
     
-    echo '<div class="notice notice-info"><p>インポート開始...</p></div>';
-    echo '<ul style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f9f9f9;">';
+    echo '<div class="notice notice-info"><p>インポート中...</p></div>';
+    echo '<ul style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f9f9f9;">';
     
     foreach ($companies as $company) {
-        // すでにインポート済みか確認
-        $existing = $wpdb->get_var($wpdb->prepare(
-            "SELECT attachment_id FROM {$media_table} WHERE company_id = %s",
-            $company->company_id
-        ));
-        
-        if ($existing) {
-            $skipped++;
-            echo '<li style="color: #999;">• スキップ: ' . esc_html($company->company_name) . ' (インポート済み)</li>';
-            continue;
-        }
-        
         echo '<li>処理中: ' . esc_html($company->company_name) . '...';
         flush();
         
@@ -856,7 +902,7 @@ function import_all_company_logos_from_db() {
     
     echo '</ul>';
     echo '<div class="notice notice-success"><p>';
-    echo '完了: ' . $imported . '件インポート / ' . $skipped . '件スキップ / ' . $errors . '件エラー';
+    echo 'このバッチ: ' . $imported . '件成功 / ' . $errors . '件失敗';
     echo '</p></div>';
 }
 
