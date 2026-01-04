@@ -63,7 +63,36 @@ async def extract_table_values(company_el) -> Dict[str, str]:
     }
 
 
-async def extract_company_data(company_el, page_number: int, rank: int) -> Dict[str, str]:
+async def fetch_official_homepage_url(context, company_url: str) -> str:
+    if not company_url:
+        return ""
+
+    detail_page = await context.new_page()
+    try:
+        await detail_page.goto(company_url, wait_until="networkidle", timeout=60000)
+        await detail_page.wait_for_timeout(1000)
+
+        rows = await detail_page.query_selector_all(
+            "section#company table.c_list_company_table tr"
+        )
+        for row in rows:
+            label = await clean_text(await row.query_selector("th"))
+            if label == "公式ホームページ":
+                link_el = await row.query_selector("a")
+                if link_el:
+                    return await get_attr(link_el, "href")
+                return await clean_text(await row.query_selector("td"))
+    except Exception as exc:
+        print(f"  ⚠ 公式ホームページ取得失敗: {company_url} ({exc})")
+    finally:
+        await detail_page.close()
+
+    return ""
+
+
+async def extract_company_data(
+    company_el, page_number: int, rank: int, context
+) -> Dict[str, str]:
     name_el = await company_el.query_selector(".gyosha_results_ttl a")
     image_el = await company_el.query_selector(".gyosha_results_img img")
     rating_star_el = await company_el.query_selector(".star5_rating")
@@ -77,12 +106,16 @@ async def extract_company_data(company_el, page_number: int, rank: int) -> Dict[
     review_text_el = await company_el.query_selector(".gyosha_results_box_text")
     review_image_el = await company_el.query_selector(".reviews_box_img img")
 
+    company_url = await get_attr(name_el, "href")
+    official_homepage_url = await fetch_official_homepage_url(context, company_url)
+
     return {
         "ページ": page_number,
         "順位": rank,
         "会社ID": await get_attr(company_el, "id"),
         "不用品回収業者名": await clean_text(name_el),
-        "会社URL": await get_attr(name_el, "href"),
+        "会社URL": company_url,
+        "公式ホームページURL": official_homepage_url,
         "ロゴ画像URL": await get_attr(image_el, "src"),
         "ロゴ画像ALT": await get_attr(image_el, "alt"),
         "総合評価（星）": await get_attr(rating_star_el, "data-rate"),
@@ -134,7 +167,7 @@ async def scrape_all_pages() -> List[Dict[str, str]]:
                 break
 
             for idx, company_el in enumerate(companies, start=1):
-                data = await extract_company_data(company_el, page_number, idx)
+                data = await extract_company_data(company_el, page_number, idx, context)
                 if data["不用品回収業者名"]:
                     results.append(data)
                     print(f"  ✓ {idx}. {data['不用品回収業者名']}")
@@ -163,6 +196,7 @@ async def main() -> None:
         "会社ID",
         "不用品回収業者名",
         "会社URL",
+        "公式ホームページURL",
         "ロゴ画像URL",
         "ロゴ画像ALT",
         "総合評価（星）",

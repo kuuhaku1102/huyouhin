@@ -219,6 +219,7 @@ scripts/
 | 会社ID | `div.gyosha_results_container` の `id` |
 | 不用品回収業者名 | 業者名 |
 | 会社URL | 詳細ページURL |
+| 公式ホームページURL | 会社ページ内の公式ホームページURL |
 | ロゴ画像URL | 画像URL |
 | ロゴ画像ALT | 画像代替テキスト |
 | 総合評価（星） | `data-rate` の値 |
