@@ -1960,3 +1960,448 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ========================================
+   コラム一覧ページ - おしゃれデザイン
+======================================== */
+.column-archive {
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.archive-hero {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 5rem 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+.archive-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+  opacity: 0.3;
+}
+
+.archive-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.archive-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.02em;
+}
+
+.archive-description {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.archive-content {
+  padding: 5rem 0;
+}
+
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+}
+
+.archive-card {
+  background: white;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.archive-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.archive-card:hover::before {
+  transform: scaleX(1);
+}
+
+.archive-card:hover {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+}
+
+.archive-card-image {
+  display: block;
+  height: 220px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+}
+
+.archive-card-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%);
+}
+
+.archive-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.archive-card:hover .archive-card-image img {
+  transform: scale(1.1) rotate(1deg);
+}
+
+.archive-card-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.archive-card-content {
+  padding: 2rem;
+}
+
+.archive-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.archive-card-date {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+
+.archive-card-category {
+  padding: 0.375rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.archive-card-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.archive-card-title a {
+  color: var(--color-text);
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+  background-size: 0% 2px;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+}
+
+.archive-card-title a:hover {
+  background-size: 100% 2px;
+  color: #667eea;
+}
+
+.archive-card-excerpt {
+  color: var(--color-text-light);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.archive-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #667eea;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.9375rem;
+}
+
+.archive-card-link svg {
+  transition: transform 0.3s ease;
+}
+
+.archive-card-link:hover {
+  gap: 0.875rem;
+  color: #764ba2;
+}
+
+.archive-card-link:hover svg {
+  transform: translateX(4px);
+}
+
+.archive-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 4rem;
+  flex-wrap: wrap;
+}
+
+.archive-pagination a,
+.archive-pagination span {
+  padding: 0.875rem 1.5rem;
+  background: white;
+  color: var(--color-text);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+}
+
+.archive-pagination a:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  border-color: transparent;
+}
+
+.archive-pagination .current {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.archive-no-posts {
+  text-align: center;
+  padding: 5rem 2rem;
+  font-size: 1.25rem;
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+
+/* コラム詳細ページ - おしゃれデザイン */
+.single-post .article-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4rem 0 3rem;
+  margin-bottom: 0;
+}
+
+.single-post .article-category {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.single-post .article-title {
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.single-post .article-meta {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.single-post .article-meta svg {
+  opacity: 0.9;
+}
+
+.single-post .article-featured-image {
+  margin-top: -3rem;
+  position: relative;
+  z-index: 10;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.single-post .article-content {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  margin-top: 2rem;
+}
+
+.single-post .article-content h2 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.single-post .article-content h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+.single-post .article-content h3 {
+  color: #667eea;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.single-post .article-content h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 70%;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+}
+
+.single-post .article-content blockquote {
+  border-left: 4px solid #667eea;
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+  border-radius: 0 0.75rem 0.75rem 0;
+  font-style: italic;
+  color: var(--color-text);
+}
+
+.single-post .article-content table {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.single-post .article-content th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.single-post .article-content tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.single-post .tags-list {
+  gap: 0.75rem;
+}
+
+.single-post .tag-item {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: #667eea;
+  border: 2px solid transparent;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.single-post .tag-item:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.single-post .article-cta {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+
+.single-post .cta-title {
+  color: white;
+}
+
+.single-post .cta-description {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.single-post .btn-primary {
+  background: white;
+  color: #667eea;
+  font-weight: 700;
+}
+
+.single-post .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.single-post .related-card {
+  border: 2px solid transparent;
+  transition: all 0.4s ease;
+}
+
+.single-post .related-card:hover {
+  border-color: #667eea;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .archive-title {
+    font-size: 2rem;
+  }
+  
+  .archive-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .single-post .article-title {
+    font-size: 1.75rem;
+  }
+  
+  .single-post .article-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .single-post .article-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .single-post .article-content h3 {
+    font-size: 1.25rem;
+  }
+}
