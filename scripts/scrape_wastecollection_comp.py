@@ -7,6 +7,7 @@
 
 import asyncio
 from typing import Dict, List
+from urllib.parse import urljoin
 
 import pandas as pd
 from playwright.async_api import async_playwright
@@ -69,6 +70,7 @@ async def extract_company_data(company_el, page_number: int, rank: int) -> Dict[
     rating_star_el = await company_el.query_selector(".star5_rating")
 
     table_values = await extract_table_values(company_el)
+    company_url = await get_attr(name_el, "href")
 
     review_title_el = await company_el.query_selector(".gyosha_results_box_ttl")
     review_user_el = await company_el.query_selector(".reviews_box_name")
@@ -82,7 +84,7 @@ async def extract_company_data(company_el, page_number: int, rank: int) -> Dict[
         "順位": rank,
         "会社ID": await get_attr(company_el, "id"),
         "不用品回収業者名": await clean_text(name_el),
-        "会社URL": await get_attr(name_el, "href"),
+        "会社URL": company_url,
         "ロゴ画像URL": await get_attr(image_el, "src"),
         "ロゴ画像ALT": await get_attr(image_el, "alt"),
         "総合評価（星）": await get_attr(rating_star_el, "data-rate"),
@@ -97,6 +99,77 @@ async def extract_company_data(company_el, page_number: int, rank: int) -> Dict[
         "口コミ本文": await clean_text(review_text_el),
         "口コミ画像URL": await get_attr(review_image_el, "src"),
     }
+
+
+async def extract_company_detail(page, company_url: str) -> Dict[str, str]:
+    if not company_url:
+        return {}
+
+    detail_url = urljoin(BASE_URL, company_url)
+
+    try:
+        await page.goto(detail_url, wait_until="networkidle", timeout=60000)
+    except Exception as exc:
+        print(f"  ✗ 詳細ページ取得失敗: {detail_url} ({exc})")
+        return {"詳細ページURL": detail_url}
+
+    await page.wait_for_timeout(1500)
+
+    detail_data: Dict[str, str] = {
+        "詳細ページURL": detail_url,
+    }
+
+    container = await page.query_selector(".c_list_container")
+    if not container:
+        return detail_data
+
+    detail_image_el = await container.query_selector(".c_list_img img")
+    detail_data.update(
+        {
+            "詳細ページロゴ画像URL": await get_attr(detail_image_el, "src"),
+            "詳細ページロゴ画像ALT": await get_attr(detail_image_el, "alt"),
+        }
+    )
+
+    reviews_block = await container.query_selector(".c_list_contents_reviews")
+    if reviews_block:
+        overall_star_el = await reviews_block.query_selector(".c_list_rank .star5_rating")
+        overall_rating_el = await reviews_block.query_selector(".c_list_rank .rating_text")
+        review_count_el = await reviews_block.query_selector(".reviews_fee_num")
+
+        detail_data.update(
+            {
+                "詳細ページ総合評価（星）": await get_attr(overall_star_el, "data-rate"),
+                "詳細ページ総合評価（テキスト）": await clean_text(overall_rating_el),
+                "詳細ページ口コミ件数": await clean_text(review_count_el),
+            }
+        )
+
+        rating_rows = await reviews_block.query_selector_all(".c_list_reviews")
+        for row in rating_rows:
+            label = await clean_text(await row.query_selector(".c_list_reviews_text"))
+            value = await clean_text(await row.query_selector(".gyosha_results_star_text"))
+            if label and value:
+                detail_data[f"詳細ページ{label}"] = value
+
+    points_items = await container.query_selector_all(".c_list_point_area .c_list_point_item")
+    if points_items:
+        points = [await clean_text(item) for item in points_items if await clean_text(item)]
+        detail_data["おすすめポイント"] = " / ".join(points)
+
+    feature_text_el = await container.query_selector(".outline-company-feature p")
+    detail_data["特徴"] = await clean_text(feature_text_el)
+
+    company_section = await page.query_selector("#company")
+    if company_section:
+        rows = await company_section.query_selector_all("table.c_list_company_table tr")
+        for row in rows:
+            label = await clean_text(await row.query_selector("th"))
+            if "公式ホームページ" in label:
+                link_el = await row.query_selector("a")
+                detail_data["公式ホームページURL"] = await get_attr(link_el, "href")
+
+    return detail_data
 
 
 async def scrape_all_pages() -> List[Dict[str, str]]:
@@ -135,6 +208,10 @@ async def scrape_all_pages() -> List[Dict[str, str]]:
 
             for idx, company_el in enumerate(companies, start=1):
                 data = await extract_company_data(company_el, page_number, idx)
+                detail_page = await context.new_page()
+                detail_data = await extract_company_detail(detail_page, data.get("会社URL", ""))
+                await detail_page.close()
+                data.update(detail_data)
                 if data["不用品回収業者名"]:
                     results.append(data)
                     print(f"  ✓ {idx}. {data['不用品回収業者名']}")
@@ -178,6 +255,18 @@ async def main() -> None:
         "口コミ内訳",
         "口コミ本文",
         "口コミ画像URL",
+        "詳細ページURL",
+        "詳細ページロゴ画像URL",
+        "詳細ページロゴ画像ALT",
+        "詳細ページ総合評価（星）",
+        "詳細ページ総合評価（テキスト）",
+        "詳細ページ口コミ件数",
+        "詳細ページ回収料金",
+        "詳細ページ回収速度",
+        "詳細ページ対応の良さ",
+        "おすすめポイント",
+        "特徴",
+        "公式ホームページURL",
     ]
 
     for column in columns_order:
