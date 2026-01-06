@@ -87,7 +87,7 @@ def log_message(message):
 def get_wp_category_ids():
     """WordPressからカテゴリIDを取得"""
     try:
-        url = f"{WP_URL}/wp-json/wp/v2/column_category"
+        url = f"{WP_URL}/wp-json/wp/v2/categories"
         response = requests.get(url)
         response.raise_for_status()
         
@@ -362,14 +362,14 @@ def format_article_content(article_json):
 
 def post_to_wordpress(title, content, meta_description, category_id):
     """WordPressに記事を投稿"""
-    url = f"{WP_URL}/wp-json/wp/v2/columns"
+    url = f"{WP_URL}/wp-json/wp/v2/posts"
     
     data = {
         "title": title,
         "content": content,
         "status": "publish",
         "excerpt": meta_description,
-        "column_category": [category_id] if category_id else [],  # カテゴリを割り当て
+        "categories": [category_id] if category_id else [],  # カテゴリを割り当て
     }
     
     try:
