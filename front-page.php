@@ -1,11 +1,11 @@
 <?php get_header(); ?>
 
 <!-- Hero Section -->
-<section class="hero hero-new">
+<section class="hero hero-new" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/hero-illustration.png');">
     <div class="container">
         <div class="hero-grid">
             <!-- Left Content -->
-            <div class="hero-content">
+            <div class="hero-content hero-content-card">
                 <h1 class="hero-title-new">
                     あなたにぴったりの<br>
                     不用品回収サービスを探そう
@@ -66,8 +66,8 @@
                 </div>
             </div>
 
-            <!-- Right Illustration (Background) -->
-            <div class="hero-illustration" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/hero-illustration.png');"></div>
+            <!-- Right side - empty for background image -->
+            <div class="hero-illustration-spacer"></div>
         </div>
 
         <!-- Stats -->
