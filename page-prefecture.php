@@ -248,6 +248,126 @@ $prefecture_name = get_the_title();
         
         <?php endif; ?>
         
+        <!-- SEOコンテンツセクション -->
+        <?php if (!empty($companies)) : ?>
+        <section class="seo-content">
+            <?php
+            // 都道府県別のSEOコンテンツを取得
+            $seo_content = get_prefecture_seo_content($prefecture_name);
+            if ($seo_content) :
+            ?>
+            
+            <!-- 不用品処分の方法 -->
+            <div class="seo-section">
+                <h2><?php echo esc_html($prefecture_name); ?>の不用品処分の方法</h2>
+                <p><?php echo nl2br(esc_html($seo_content['disposal_method'])); ?></p>
+            </div>
+            
+            <!-- 業者選びのポイント -->
+            <div class="seo-section">
+                <h2><?php echo esc_html($prefecture_name); ?>で不用品回収業者を選ぶポイント</h2>
+                <ul class="checklist">
+                    <li>処分したい不用品に対応しているか確認する</li>
+                    <li>不用品の量に合わせた料金プランがあるか</li>
+                    <li>買取サービスがあるか（費用削減のチャンス）</li>
+                    <li>口コミや評判をチェックする</li>
+                    <li>希望の日時に対応してもらえるか</li>
+                </ul>
+            </div>
+            
+            <!-- 利用がおすすめな人 -->
+            <div class="seo-section">
+                <h2><?php echo esc_html($prefecture_name); ?>で不用品回収業者の利用がおすすめな人</h2>
+                <ul class="recommend-list">
+                    <li><strong>自治体では処分できない不用品がある場合</strong><br>
+                    家電リサイクル法対象品や処理困難物も対応可能</li>
+                    <li><strong>すぐに処分したい場合</strong><br>
+                    即日対応可能な業者も多数</li>
+                    <li><strong>大量の不用品を一度に処分したい場合</strong><br>
+                    引っ越しや遺品整理、ゴミ屋敷の片付けに最適</li>
+                    <li><strong>重い家具や家電を処分したい場合</strong><br>
+                    運び出しから処分まで全てお任せ</li>
+                    <li><strong>不用品回収以外の作業も依頼したい場合</strong><br>
+                    清掃やハウスクリーニングも同時依頼可能</li>
+                </ul>
+            </div>
+            
+            <!-- 費用を抑える方法 -->
+            <div class="seo-section">
+                <h2><?php echo esc_html($prefecture_name); ?>で不用品回収の費用を抑える方法</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h3>💡 相見積もりを取る</h3>
+                        <p>複数の業者から見積もりを取り、料金とサービス内容を比較しましょう。</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>💡 追加料金を確認</h3>
+                        <p>階段料金や駐車料金など、追加費用の有無を事前に確認しておきましょう。</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>💡 買取サービスを活用</h3>
+                        <p>まだ使える家具や家電は買取してもらい、処分費用を相殺しましょう。</p>
+                    </div>
+                    <div class="tip-card">
+                        <h3>💡 割引制度を利用</h3>
+                        <p>WEB割引や早期予約割引など、各種キャンペーンを活用しましょう。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 費用相場 -->
+            <div class="seo-section">
+                <h2><?php echo esc_html($prefecture_name); ?>の不用品回収費用相場</h2>
+                <div class="price-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>トラックサイズ</th>
+                                <th>積載量の目安</th>
+                                <th>料金相場</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>軽トラック</td>
+                                <td>1R～1K程度</td>
+                                <td><?php echo esc_html($seo_content['price_light_truck']); ?></td>
+                            </tr>
+                            <tr>
+                                <td>1.5tトラック</td>
+                                <td>1K～1DK程度</td>
+                                <td><?php echo esc_html($seo_content['price_1t_truck']); ?></td>
+                            </tr>
+                            <tr>
+                                <td>2tトラック</td>
+                                <td>1DK～2DK程度</td>
+                                <td><?php echo esc_html($seo_content['price_2t_truck']); ?></td>
+                            </tr>
+                            <tr>
+                                <td>4tトラック</td>
+                                <td>2DK～3LDK程度</td>
+                                <td><?php echo esc_html($seo_content['price_4t_truck']); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="note">※料金は業者や不用品の種類により異なります。正確な料金は見積もりでご確認ください。</p>
+                </div>
+            </div>
+            
+            <!-- まとめ -->
+            <div class="seo-section summary-section">
+                <h2>まとめ：<?php echo esc_html($prefecture_name); ?>で最適な不用品回収業者を選ぼう</h2>
+                <p><?php echo nl2br(esc_html($seo_content['summary'])); ?></p>
+                <div class="cta-box">
+                    <p class="cta-text">上記のランキングから、あなたのニーズに合った業者を見つけて、まずは無料見積もりを依頼してみましょう！</p>
+                    <a href="#top" class="cta-button">ランキングに戻る ↑</a>
+                </div>
+            </div>
+            
+            <?php endif; ?>
+        </section>
+        <?php endif; ?>
+        
         <!-- 都道府県一覧へのリンク -->
         <div class="prefecture-nav">
             <h2>他の都道府県を見る</h2>
@@ -481,7 +601,226 @@ $prefecture_name = get_the_title();
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
+/* SEOコンテンツセクション */
+.seo-content {
+    margin-top: 60px;
+    padding-top: 60px;
+    border-top: 3px solid #667eea;
+}
+
+.seo-section {
+    margin-bottom: 50px;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.seo-section h2 {
+    font-size: 28px;
+    color: #1a202c;
+    margin: 0 0 25px 0;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+}
+
+.seo-section h3 {
+    font-size: 20px;
+    color: #1a202c;
+    margin: 20px 0 10px 0;
+}
+
+.seo-section p {
+    font-size: 16px;
+    line-height: 1.9;
+    color: #4b5563;
+    margin-bottom: 15px;
+}
+
+.checklist {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.checklist li {
+    padding: 15px 15px 15px 45px;
+    margin-bottom: 12px;
+    background: #f0f9ff;
+    border-left: 4px solid #667eea;
+    border-radius: 6px;
+    position: relative;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.checklist li:before {
+    content: "✓";
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    color: #667eea;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.recommend-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.recommend-list li {
+    padding: 20px;
+    margin-bottom: 15px;
+    background: #fef3c7;
+    border-left: 5px solid #f59e0b;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.recommend-list li strong {
+    display: block;
+    font-size: 17px;
+    color: #1a202c;
+    margin-bottom: 8px;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.tip-card {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #bae6fd;
+}
+
+.tip-card h3 {
+    font-size: 18px;
+    color: #1a202c;
+    margin: 0 0 12px 0;
+}
+
+.tip-card p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #4b5563;
+    margin: 0;
+}
+
+.price-table {
+    margin-top: 25px;
+}
+
+.price-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.price-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.price-table th {
+    padding: 18px 15px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.price-table td {
+    padding: 18px 15px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 15px;
+    color: #4b5563;
+}
+
+.price-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.price-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.price-table .note {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.summary-section {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 3px solid #f59e0b;
+}
+
+.cta-box {
+    margin-top: 30px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.cta-text {
+    font-size: 17px;
+    color: #1a202c;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
 @media (max-width: 768px) {
+    .seo-section {
+        padding: 25px 20px;
+    }
+    
+    .seo-section h2 {
+        font-size: 22px;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .price-table table {
+        font-size: 14px;
+    }
+    
+    .price-table th,
+    .price-table td {
+        padding: 12px 10px;
+    }
+    
     .prefecture-links {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     }
