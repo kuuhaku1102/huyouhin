@@ -118,7 +118,10 @@ $prefecture_name = get_the_title();
         <section class="junk-ranking">
             <?php 
             $rank = 1;
-            foreach ($companies as $company) : 
+            $item_index = 0;
+            foreach ($companies as $company) :
+                $item_index++;
+                $hidden_class = ($item_index > 5) ? ' style="display:none;"' : ''; 
                 // ローカルロゴURLを取得
                 $logo_url = '';
                 if ($company->attachment_id) {
@@ -128,7 +131,7 @@ $prefecture_name = get_the_title();
                     $logo_url = $company->logo_image_url;
                 }
             ?>
-                <div class="junk-ranking-item">
+                <div class="junk-ranking-item" data-index="<?php echo $item_index; ?>"<?php echo $hidden_class; ?>>
                     
                     <!-- 順位 -->
                     <div class="rank">
@@ -237,6 +240,15 @@ $prefecture_name = get_the_title();
                 $rank++;
             endforeach; 
             ?>
+            
+            <!-- もっと見るボタン -->
+            <?php if (count($companies) > 5) : ?>
+            <div class="load-more-container">
+                <button id="loadMoreBtn" class="load-more-btn" data-loaded="5" data-total="<?php echo count($companies); ?>">
+                    もっと見る（残り<?php echo count($companies) - 5; ?>件）
+                </button>
+            </div>
+            <?php endif; ?>
         </section>
         
         <?php else : ?>
@@ -852,6 +864,87 @@ $prefecture_name = get_the_title();
         text-align: center;
     }
 }
+
+/* もっと見るボタン */
+.load-more-container {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.load-more-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 16px 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.load-more-btn:active {
+    transform: translateY(0);
+}
+
+.load-more-btn.hidden {
+    display: none;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            const loaded = parseInt(this.getAttribute('data-loaded'));
+            const total = parseInt(this.getAttribute('data-total'));
+            const nextLoad = Math.min(loaded + 5, total);
+            
+            // 次の5件を表示
+            for (let i = loaded + 1; i <= nextLoad; i++) {
+                const item = document.querySelector('.junk-ranking-item[data-index="' + i + '"]');
+                if (item) {
+                    item.style.display = 'flex';
+                    // フェードインアニメーション
+                    item.style.opacity = '0';
+                    setTimeout(function() {
+                        item.style.transition = 'opacity 0.5s ease';
+                        item.style.opacity = '1';
+                    }, 10);
+                }
+            }
+            
+            // ボタンのテキストを更新
+            this.setAttribute('data-loaded', nextLoad);
+            const remaining = total - nextLoad;
+            
+            if (remaining > 0) {
+                this.textContent = 'もっと見る（残り' + remaining + '件）';
+            } else {
+                this.textContent = 'すべて表示しました';
+                this.disabled = true;
+                this.style.opacity = '0.5';
+                this.style.cursor = 'not-allowed';
+                // 2秒後にボタンを非表示
+                setTimeout(function() {
+                    loadMoreBtn.style.transition = 'opacity 0.3s ease';
+                    loadMoreBtn.style.opacity = '0';
+                    setTimeout(function() {
+                        loadMoreBtn.style.display = 'none';
+                    }, 300);
+                }, 2000);
+            }
+        });
+    }
+});
+</script>
 
 <?php get_footer(); ?>
