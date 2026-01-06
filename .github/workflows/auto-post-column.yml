@@ -2,7 +2,7 @@ name: Auto Post Column Daily
 
 on:
   schedule:
-    # 毎日10時（日本時間）= 1時（UTC）に実行
+    # 毎日10時（日本時間 ）= 1時（UTC）に実行
     - cron: '0 1 * * *'
   workflow_dispatch: # 手動実行も可能
 
@@ -23,7 +23,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install openai requests
+          pip install openai requests python-markdown
       
       - name: Generate and post article
         env:
