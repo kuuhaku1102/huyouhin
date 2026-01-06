@@ -136,3 +136,7 @@
 - [x] 管理画面にアフィリエイトバナー登録ページを追加
 - [x] 対応地域別にPickupバナーを表示する機能
 - [x] 都道府県ページにPickupセクションを追加
+
+## GitHub Actions修正
+- [ ] ワークフローファイルにmarkdownパッケージを追加
+- [ ] GitHubシークレット（WP_USERNAME, WP_APP_PASSWORD）の設定を確認
