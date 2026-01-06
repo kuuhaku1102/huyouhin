@@ -14,16 +14,16 @@ Text Domain: fuyohin-theme
    CSS Variables & Design Tokens
    =========================== */
 :root {
-  /* Colors */
-  --color-primary: #1e40af;
-  --color-primary-hover: #1e3a8a;
-  --color-secondary: #f8fafc;
-  --color-accent: #f59e0b;
-  --color-text: #1e293b;
-  --color-text-light: #64748b;
-  --color-border: #e2e8f0;
-  --color-bg: #ffffff;
-  --color-bg-alt: #f8fafc;
+  /* Colors - Warm & Friendly Tone */
+  --color-primary: #ff9f43;
+  --color-primary-hover: #f59e0b;
+  --color-secondary: #faf8f5;
+  --color-accent: #4caf50;
+  --color-text: #2d2d2d;
+  --color-text-light: #666666;
+  --color-border: #e8e4df;
+  --color-bg: #faf8f5;
+  --color-bg-alt: #ffffff;
   
   /* Typography */
   --font-heading: 'Playfair Display', serif;
@@ -447,12 +447,13 @@ header .container {
 .btn-primary {
   background: var(--color-primary);
   color: white;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 15px rgba(255, 159, 67, 0.3);
+  border-radius: 0.75rem;
 }
 
 .btn-primary:hover {
   background: var(--color-primary-hover);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 6px 20px rgba(255, 159, 67, 0.4);
   transform: translateY(-2px);
 }
 
@@ -518,14 +519,16 @@ section {
 .feature-card {
   background: white;
   padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  border: 1px solid var(--color-border);
 }
 
 .feature-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
   transform: translateY(-4px);
+  border-color: var(--color-primary);
 }
 
 .feature-icon {
@@ -3417,10 +3420,16 @@ footer a:hover {
   gap: 2rem;
   max-width: 1000px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .stat-item-new {
   text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .stat-value-new {
