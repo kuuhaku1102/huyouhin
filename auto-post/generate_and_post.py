@@ -20,8 +20,8 @@ LOG_FILE = SCRIPT_DIR / "post_log.txt"
 
 # WordPress設定（環境変数から取得）
 WP_URL = os.environ.get("WP_URL", "https://umarekawari.online")
-WP_USERNAME = os.environ.get("WP_USERNAME")
-WP_APP_PASSWORD = os.environ.get("WP_APP_PASSWORD")
+WP_USERNAME = os.environ.get("WP_USER")
+WP_APP_PASSWORD = os.environ.get("WP_PASS")
 
 # OpenAI設定
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
