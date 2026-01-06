@@ -23,7 +23,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install openai requests python-markdown
+          pip install openai requests markdown
       
       - name: Generate and post article
         env:
