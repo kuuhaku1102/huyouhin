@@ -9,8 +9,6 @@ on:
 jobs:
   generate-and-post:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     
     steps:
       - name: Checkout repository
@@ -31,8 +29,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           WP_URL: ${{ secrets.WP_URL }}
-          WP_USER: ${{ secrets.WP_USER }}
-          WP_PASS: ${{ secrets.WP_PASS }}
+          WP_USERNAME: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_PASS }}
         run: |
           python auto-post/generate_and_post.py
       
