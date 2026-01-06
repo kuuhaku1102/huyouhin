@@ -45,13 +45,6 @@
         <span>ホーム</span>
       </a>
       
-      <a href="<?php echo esc_url(home_url('/rankings/')); ?>" class="nav-link">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 1L10.163 5.38L15 6.12L11.5 9.55L12.326 14.36L8 12.1L3.674 14.36L4.5 9.55L1 6.12L5.837 5.38L8 1Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span>ランキング</span>
-      </a>
-      
       <?php
       // コラムページを検索
       $column_page = get_page_by_path('column');
