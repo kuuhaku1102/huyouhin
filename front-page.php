@@ -1,32 +1,85 @@
 <?php get_header(); ?>
 
 <!-- Hero Section -->
-<section class="hero">
+<section class="hero hero-new">
     <div class="container">
-        <h1 class="hero-title">不用品回収の最安値がすぐに見つかる</h1>
-        <p class="hero-subtitle">複数の優良業者から一括見積もり。簡単30秒で最適な業者が見つかります。</p>
-        
-        <div class="hero-cta">
-            <a href="<?php echo home_url('/quote'); ?>" class="btn btn-primary">無料で見積もりを取る</a>
-            <a href="<?php echo home_url('/rankings'); ?>" class="btn btn-secondary">おすすめランキング</a>
+        <div class="hero-grid">
+            <!-- Left Content -->
+            <div class="hero-content">
+                <h1 class="hero-title-new">
+                    あなたにぴったりの<br>
+                    不用品回収サービスを探そう
+                </h1>
+                
+                <!-- Search Box -->
+                <div class="hero-search-box">
+                    <input 
+                        type="text" 
+                        placeholder="都道府県または市区町村からお選びください" 
+                        class="hero-search-input"
+                    >
+                    <a href="<?php echo home_url('/rankings'); ?>" class="hero-search-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        検索
+                    </a>
+                </div>
+
+                <!-- Check Points -->
+                <div class="hero-checks">
+                    <div class="hero-check-item">
+                        <svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#4caf50"/>
+                            <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>明朗の目安料金に満足したい</span>
+                    </div>
+                    <div class="hero-check-item">
+                        <svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#4caf50"/>
+                            <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>サービスを比較し安く見つけたい</span>
+                    </div>
+                    <div class="hero-check-item">
+                        <svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#4caf50"/>
+                            <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>安心して直接依頼できる業者を探したい</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Illustration -->
+            <div class="hero-illustration">
+                <img 
+                    src="<?php echo get_template_directory_uri(); ?>/images/hero-illustration.png" 
+                    alt="不用品回収サービスのイラスト"
+                    class="hero-image"
+                >
+            </div>
         </div>
 
-        <div class="hero-stats">
-            <div class="stat-item">
-                <div class="stat-value">10,000+</div>
-                <div class="stat-label">利用者数</div>
+        <!-- Stats -->
+        <div class="hero-stats-new">
+            <div class="stat-item-new">
+                <div class="stat-value-new">10,000+</div>
+                <div class="stat-label-new">利用者数</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">500+</div>
-                <div class="stat-label">提携業者</div>
+            <div class="stat-item-new">
+                <div class="stat-value-new">500+</div>
+                <div class="stat-label-new">提携業者</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">4.8</div>
-                <div class="stat-label">平均評価</div>
+            <div class="stat-item-new">
+                <div class="stat-value-new">4.8</div>
+                <div class="stat-label-new">平均評価</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">98%</div>
-                <div class="stat-label">満足度</div>
+            <div class="stat-item-new">
+                <div class="stat-value-new">98%</div>
+                <div class="stat-label-new">満足度</div>
             </div>
         </div>
     </div>
