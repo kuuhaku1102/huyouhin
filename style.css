@@ -559,38 +559,43 @@ section {
 
 .top-ranking-card {
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 2px solid transparent;
+  border: 2px solid var(--color-border);
 }
 
 .top-ranking-card:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 30px rgba(255, 159, 67, 0.2);
   transform: translateY(-8px);
+  border-color: var(--color-primary);
 }
 
 .top-ranking-card.rank-1 {
-  border-color: #fbbf24;
-  background: linear-gradient(to bottom, #fffbeb 0%, white 100%);
+  border-color: #ff9f43;
+  background: linear-gradient(to bottom, #fff8f0 0%, white 100%);
 }
 
 .top-ranking-card.rank-1 .rank-badge-top {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: linear-gradient(135deg, #ff9f43 0%, #f59e0b 100%);
 }
 
 .top-ranking-card.rank-2 {
-  border-color: #cbd5e1;
+  border-color: #ffb366;
 }
 
 .top-ranking-card.rank-2 .rank-badge-top {
-  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  background: linear-gradient(135deg, #ffb366 0%, #ff9f43 100%);
 }
 
 .top-ranking-card.rank-3 {
-  border-color: #d97706;
+  border-color: #ffc999;
+}
+
+.top-ranking-card.rank-3 .rank-badge-top {
+  background: linear-gradient(135deg, #ffc999 0%, #ffb366 100%);
 }
 
 .top-ranking-card.rank-3 .rank-badge-top {
@@ -879,14 +884,16 @@ section {
 .service-card {
   background: white;
   padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
+  border-radius: 1.25rem;
   border: 2px solid var(--color-border);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .service-card:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 25px rgba(255, 159, 67, 0.2);
+  transform: translateY(-4px);
 }
 
 .service-title {
@@ -903,10 +910,11 @@ section {
    CTA Section
    =========================== */
 .cta-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff9f43 0%, #f59e0b 100%);
   color: white;
   text-align: center;
   padding: var(--spacing-2xl) 0;
+  box-shadow: 0 10px 40px rgba(255, 159, 67, 0.3);
 }
 
 .cta-title {
@@ -925,10 +933,11 @@ section {
    Page Header
    =========================== */
 .page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff9f43 0%, #f59e0b 100%);
   color: white;
   padding: var(--spacing-xl) 0;
   text-align: center;
+  box-shadow: 0 4px 20px rgba(255, 159, 67, 0.3);
 }
 
 .page-title {
@@ -1283,10 +1292,11 @@ section {
    Footer
    =========================== */
 footer {
-  background: var(--color-text);
+  background: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%);
   color: white;
   padding: var(--spacing-xl) 0 var(--spacing-lg);
   margin-top: var(--spacing-2xl);
+  border-top: 3px solid var(--color-primary);
 }
 
 footer a {
@@ -1407,22 +1417,22 @@ footer a:hover {
   display: block;
   padding: var(--spacing-sm) var(--spacing-md);
   background: white;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
   text-align: center;
   text-decoration: none;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-weight: 600;
-  transition: all var(--transition-base);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .prefecture-link:hover {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  background: var(--color-primary);
   color: white;
-  border-color: var(--primary);
+  border-color: var(--color-primary);
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 6px 20px rgba(255, 159, 67, 0.3);
 }
 
 .prefecture-link.disabled {
