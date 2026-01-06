@@ -62,9 +62,28 @@ function fuyohin_register_post_types() {
         'supports' => array('title', 'editor', 'thumbnail', 'excerpt'),
         'rewrite' => array('slug' => 'columns'),
         'show_in_rest' => true,
+        'taxonomies' => array('column_category'), // カテゴリタクソノミーを追加
     ));
 
-    // 口コミ
+    // コラムカテゴリタクソノミー
+    register_taxonomy('column_category', 'column', array(
+        'labels' => array(
+            'name' => 'コラムカテゴリ',
+            'singular_name' => 'コラムカテゴリ',
+            'search_items' => 'カテゴリを検索',
+            'all_items' => 'すべてのカテゴリ',
+            'edit_item' => 'カテゴリを編集',
+            'update_item' => 'カテゴリを更新',
+            'add_new_item' => '新しいカテゴリを追加',
+        ),
+        'hierarchical' => true, // 階層構造を有効化
+        'show_ui' => true,
+        'show_admin_column' => true,
+        'query_var' => true,
+        'rewrite' => array('slug' => 'column-category'),
+        'show_in_rest' => true,
+    ));
+
     // 都道府県タクソノミー
 register_taxonomy('prefecture', 'company', array(
     'labels' => array(
@@ -1591,3 +1610,35 @@ function get_prefecture_seo_content($prefecture_name) {
     
     return isset($seo_data[$prefecture_name]) ? $seo_data[$prefecture_name] : $default_content;
 }
+
+// ===========================
+// noindex設定（2026年SEO対策）
+// ===========================
+
+function fuyohin_noindex_pages() {
+    // タグページ
+    if (is_tag()) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+    
+    // 日付アーカイブ
+    if (is_date()) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+    
+    // 著者アーカイブ
+    if (is_author()) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+    
+    // ページネーション2ページ目以降
+    if (is_paged() && get_query_var('paged') > 1) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+    
+    // 内部検索結果
+    if (is_search()) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+}
+add_action('wp_head', 'fuyohin_noindex_pages', 1);
