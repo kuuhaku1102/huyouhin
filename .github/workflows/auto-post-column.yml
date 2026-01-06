@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install openai requests markdown
-      
+      # WordPress認証情報（WP_USERとWP_PASSを使用）
       - name: Generate and post article
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
