@@ -3327,9 +3327,17 @@ footer a:hover {
   padding: 0.75rem 1rem;
   font-size: 1rem;
   background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 3rem;
 }
 
-.hero-search-input::placeholder {
+.hero-search-input option:first-child {
   color: #999;
 }
 
@@ -3377,12 +3385,11 @@ footer a:hover {
 
 .hero-illustration {
   position: relative;
-}
-
-.hero-image {
-  width: 100%;
-  height: auto;
-  display: block;
+  min-height: 500px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 1rem;
 }
 
 .hero-stats-new {

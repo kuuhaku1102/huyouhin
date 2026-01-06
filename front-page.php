@@ -13,18 +13,31 @@
                 
                 <!-- Search Box -->
                 <div class="hero-search-box">
-                    <input 
-                        type="text" 
-                        placeholder="都道府県または市区町村からお選びください" 
-                        class="hero-search-input"
-                    >
-                    <a href="<?php echo home_url('/rankings'); ?>" class="hero-search-btn">
+                    <select class="hero-search-input" id="prefecture-select" onchange="if(this.value) window.location.href=this.value">
+                        <option value="">都道府県または市区町村からお選びください</option>
+                        <?php
+                        $prefectures = [
+                            '北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県',
+                            '茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県',
+                            '新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県',
+                            '三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県',
+                            '鳥取県', '島根県', '岡山県', '広島県', '山口県',
+                            '徳島県', '香川県', '愛媛県', '高知県',
+                            '福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'
+                        ];
+                        foreach ($prefectures as $pref) {
+                            $pref_url = home_url('/' . $pref . '/');
+                            echo '<option value="' . esc_url($pref_url) . '">' . esc_html($pref) . '</option>';
+                        }
+                        ?>
+                    </select>
+                    <button class="hero-search-btn" onclick="document.getElementById('prefecture-select').onchange()">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         検索
-                    </a>
+                    </button>
                 </div>
 
                 <!-- Check Points -->
@@ -53,14 +66,8 @@
                 </div>
             </div>
 
-            <!-- Right Illustration -->
-            <div class="hero-illustration">
-                <img 
-                    src="<?php echo get_template_directory_uri(); ?>/images/hero-illustration.png" 
-                    alt="不用品回収サービスのイラスト"
-                    class="hero-image"
-                >
-            </div>
+            <!-- Right Illustration (Background) -->
+            <div class="hero-illustration" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/hero-illustration.png');"></div>
         </div>
 
         <!-- Stats -->
