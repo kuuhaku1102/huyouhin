@@ -67,6 +67,53 @@ $prefecture_name = get_the_title();
             <p><strong><?php echo esc_html($prefecture_name); ?>対応の業者:</strong> <?php echo count($companies); ?>社</p>
         </div>
         
+        <?php
+        // アフィリエイトバナーを取得
+        $banner_table = $wpdb->prefix . 'affiliate_banners';
+        $banner_table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$banner_table}'") === $banner_table;
+        
+        if ($banner_table_exists) {
+            // 該当都道府県のバナーを取得（全国対応も含む）
+            $banners = $wpdb->get_results($wpdb->prepare("
+                SELECT * FROM {$banner_table}
+                WHERE is_active = 1
+                AND (target_prefectures = '' 
+                     OR target_prefectures IS NULL 
+                     OR target_prefectures LIKE %s)
+                ORDER BY display_order ASC, id DESC
+                LIMIT 3
+            ", '%' . $wpdb->esc_like($prefecture_name) . '%'));
+            
+            if (!empty($banners)) :
+        ?>
+        <!-- Pickupバナー -->
+        <section class="pickup-banners">
+            <h2 class="pickup-title">🎯 <?php echo esc_html($prefecture_name); ?>のおすすめサービス</h2>
+            <div class="pickup-grid">
+                <?php foreach ($banners as $banner) : ?>
+                    <a href="<?php echo esc_url($banner->affiliate_url); ?>" 
+                       class="pickup-banner" 
+                       target="_blank" 
+                       rel="noopener noreferrer nofollow">
+                        <?php if (!empty($banner->banner_image_url)) : ?>
+                            <img src="<?php echo esc_url($banner->banner_image_url); ?>" 
+                                 alt="<?php echo esc_attr($banner->title); ?>" 
+                                 loading="lazy">
+                        <?php else : ?>
+                            <div class="banner-text">
+                                <h3><?php echo esc_html($banner->title); ?></h3>
+                                <span class="banner-cta">詳細を見る →</span>
+                            </div>
+                        <?php endif; ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php 
+            endif;
+        }
+        ?>
+        
         <!-- 業者一覧 -->
         <section class="junk-ranking">
             <?php 

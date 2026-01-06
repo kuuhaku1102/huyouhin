@@ -2817,3 +2817,92 @@ footer a:hover {
     gap: 1.5rem;
   }
 }
+
+
+/* ========================================
+   Pickupバナー（アフィリエイト）
+======================================== */
+.pickup-banners {
+  margin: 3rem 0;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.pickup-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pickup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.pickup-banner {
+  display: block;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+
+.pickup-banner:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.pickup-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.pickup-banner .banner-text {
+  padding: 2rem;
+  text-align: center;
+}
+
+.pickup-banner .banner-text h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.pickup-banner .banner-cta {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.pickup-banner:hover .banner-cta {
+  transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+  .pickup-banners {
+    padding: 1.5rem;
+  }
+  
+  .pickup-title {
+    font-size: 1.5rem;
+  }
+  
+  .pickup-grid {
+    grid-template-columns: 1fr;
+  }
+}
