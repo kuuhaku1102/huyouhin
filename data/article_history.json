@@ -1,8 +1,12 @@
 {
-  "last_category": "basics",
+  "last_category": "item_guide",
   "last_article_date": "2026-01-10",
   "category_progress": {
     "basics": {
+      "total_articles": 1,
+      "last_priority": 1
+    },
+    "item_guide": {
       "total_articles": 1,
       "last_priority": 1
     }
