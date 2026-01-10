@@ -59,9 +59,7 @@ class ArticleGenerator:
         # キーワードが指定されている場合はそれを使用
         keyword_instruction = ""
         if 'selected_keyword' in role_data:
-            keyword_instruction = f"
-【ターゲットキーワード】{role_data['selected_keyword']}
-※このキーワードを中心に記事を構成してください。"
+            keyword_instruction = f"\n【ターゲットキーワード】{role_data['selected_keyword']}\n※このキーワードを中心に記事を構成してください。"
         
         prompt = f"""
 あなたはSEOの専門家です。以下の記事テーマについて、検索意図を分析してください。
