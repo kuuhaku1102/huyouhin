@@ -5,6 +5,7 @@
 
 import os
 import json
+import random
 from pathlib import Path
 from datetime import datetime
 from generate_article_v3 import ArticleGenerator
@@ -111,8 +112,19 @@ class AutoBlogSystem:
         if not next_role:
             next_role = roles[0]
         
-        print(f"  ✓ カテゴリー: {selected_category['name']}")
-        print(f"  ✓ 記事役割: {next_role['role']}")
+        # カテゴリーのキーワードリストからランダムに選択
+        if 'keywords' in selected_category and selected_category['keywords']:
+            # 上位100件からランダムに選択（トラフィックの多いキーワードを優先）
+            top_keywords = selected_category['keywords'][:100]
+            selected_keyword = random.choice(top_keywords)
+            # 記事役割にキーワードを追加
+            next_role['selected_keyword'] = selected_keyword
+            print(f"  ✓ カテゴリー: {selected_category['name']}")
+            print(f"  ✓ 記事役割: {next_role['role']}")
+            print(f"  ✓ ターゲットキーワード: {selected_keyword}")
+        else:
+            print(f"  ✓ カテゴリー: {selected_category['name']}")
+            print(f"  ✓ 記事役割: {next_role['role']}")
         
         return selected_category, next_role
     

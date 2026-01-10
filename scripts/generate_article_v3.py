@@ -53,8 +53,15 @@ class ArticleGenerator:
         }
     
     def step1_define_intent(self, category_data: Dict, role_data: Dict) -> Dict:
-        """Step 1: 検索意図の定義"""
+        """検索意図の定義"""
         print("📌 Step 1: 検索意図の定義")
+        
+        # キーワードが指定されている場合はそれを使用
+        keyword_instruction = ""
+        if 'selected_keyword' in role_data:
+            keyword_instruction = f"
+【ターゲットキーワード】{role_data['selected_keyword']}
+※このキーワードを中心に記事を構成してください。"
         
         prompt = f"""
 あなたはSEOの専門家です。以下の記事テーマについて、検索意図を分析してください。
@@ -62,7 +69,7 @@ class ArticleGenerator:
 【カテゴリー】{category_data['name']}
 【記事の役割】{role_data['role']}
 【目的】{role_data['purpose']}
-【差別化ポイント】{role_data['differentiation']}
+【差別化ポイント】{role_data['differentiation']}{keyword_instruction}
 
 以下の項目をJSON形式で出力してください：
 {{
