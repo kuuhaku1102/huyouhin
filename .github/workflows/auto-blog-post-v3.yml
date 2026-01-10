@@ -1,9 +1,9 @@
-name: Auto Post Column Daily
+name: Auto Blog Post v3 (6-Step SEO)
 
 on:
   schedule:
-    # 毎日10時（日本時間 ）= 1時（UTC）に実行
-    - cron: '0 1 * * *'
+    # 毎週火・木・土の10時（日本時間） = 1時（UTC）に実行
+    - cron: '0 1 * * 2,4,6'
   workflow_dispatch: # 手動実行も可能
 
 jobs:
@@ -23,21 +23,22 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install openai requests markdown
-      # WordPress認証情報（WP_USERとWP_PASSを使用）
-      - name: Generate and post article
+          pip install -r requirements.txt
+      
+      - name: Run Auto Blog System v3
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          WP_URL: ${{ secrets.WP_URL }}
+          WP_SITE_URL: ${{ secrets.WP_URL }}
           WP_USER: ${{ secrets.WP_USER }}
           WP_PASS: ${{ secrets.WP_PASS }}
         run: |
-          python auto-post/generate_and_post.py
+          cd scripts
+          python auto_blog_v3.py
       
-      - name: Commit updated keywords.json
+      - name: Commit generated data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add auto-post/keywords.json auto-post/post_log.txt
-          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update keywords progress [skip ci]"
+          git add data/article_history.json data/internal_links_db.json data/articles/
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update article data [skip ci]"
           git push
