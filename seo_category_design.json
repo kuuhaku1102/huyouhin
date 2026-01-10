@@ -1,0 +1,103 @@
+{
+  "site_info": {
+    "name": "不用品回収業者比較ラボ",
+    "domain": "https://umarekawari.online",
+    "target_audience": "不用品回収サービスを探している個人・法人",
+    "main_keywords": ["不用品回収", "粗大ゴミ", "処分", "業者比較"]
+  },
+  "categories": [
+    {
+      "slug": "basics",
+      "name": "不用品回収の基礎知識",
+      "description": "不用品回収サービスの基本情報、料金相場、業者選びのポイントなど",
+      "article_roles": [
+        {
+          "role": "基礎知識記事",
+          "purpose": "初心者向けの基本情報を提供し、サービス理解を促進",
+          "differentiation": "実例と具体的な数字を豊富に使用",
+          "priority": 1
+        },
+        {
+          "role": "比較記事",
+          "purpose": "複数の選択肢を比較し、意思決定をサポート",
+          "differentiation": "表形式での明確な比較と客観的な評価",
+          "priority": 2
+        },
+        {
+          "role": "ハウツー記事",
+          "purpose": "具体的な手順を示し、行動を促進",
+          "differentiation": "ステップバイステップの詳細な解説",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "slug": "item_guide",
+      "name": "品目別処分ガイド",
+      "description": "家具、家電、衣類など品目別の処分方法と注意点",
+      "article_roles": [
+        {
+          "role": "品目別ガイド",
+          "purpose": "特定品目の処分方法を網羅的に解説",
+          "differentiation": "法律・条例の情報と実際の処分事例",
+          "priority": 1
+        },
+        {
+          "role": "費用相場記事",
+          "purpose": "品目別の処分費用相場を明確に提示",
+          "differentiation": "地域別・業者別の詳細な料金データ",
+          "priority": 2
+        },
+        {
+          "role": "注意点記事",
+          "purpose": "処分時のトラブルを未然に防ぐ",
+          "differentiation": "実際のトラブル事例と対処法",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "slug": "situation_guide",
+      "name": "状況別の処分方法",
+      "description": "引越し、遺品整理、事業所の移転など状況別の対応方法",
+      "article_roles": [
+        {
+          "role": "状況別ガイド",
+          "purpose": "特定の状況に最適な処分方法を提案",
+          "differentiation": "状況に応じた具体的なスケジュールと手順",
+          "priority": 1
+        },
+        {
+          "role": "ケーススタディ",
+          "purpose": "実際の事例を通じて理解を深める",
+          "differentiation": "詳細な事例紹介とビフォーアフター",
+          "priority": 2
+        },
+        {
+          "role": "チェックリスト記事",
+          "purpose": "準備すべき項目を明確化",
+          "differentiation": "印刷可能なチェックリスト形式",
+          "priority": 3
+        }
+      ]
+    }
+  ],
+  "seo_strategy": {
+    "internal_linking": {
+      "min_links_per_article": 3,
+      "max_links_per_article": 5,
+      "anchor_text_strategy": "自然な文脈でのキーワード使用"
+    },
+    "content_quality": {
+      "min_word_count": 3000,
+      "target_word_count": 5000,
+      "readability_level": "中学生レベル",
+      "quality_gate_threshold": 50
+    },
+    "publishing_schedule": {
+      "frequency": "週3回（火・木・土）",
+      "time": "10:00 JST",
+      "category_rotation": true
+    }
+  }
+}
