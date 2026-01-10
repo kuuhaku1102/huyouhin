@@ -10,12 +10,11 @@ from openai import OpenAI
 
 class ArticleGenerator:
     def __init__(self):
-        # Gemini API設定（OpenAI互換）
+        # OpenAI API設定
         self.client = OpenAI(
-            api_key=os.environ.get("OPENAI_API_KEY"),
-            base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+            api_key=os.environ.get("OPENAI_API_KEY")
         )
-        self.model = "gemini-2.0-flash-exp"
+        self.model = "gpt-4o-mini"
         self.pass_score = 50  # 品質ゲートの合格点
     
     def generate_article(self, category_data: Dict, role_data: Dict) -> Dict:
