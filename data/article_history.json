@@ -1,6 +1,6 @@
 {
-  "last_category": "item_guide",
-  "last_article_date": "2026-03-05",
+  "last_category": "situation_guide",
+  "last_article_date": "2026-03-07",
   "category_progress": {
     "basics": {
       "total_articles": 10,
@@ -11,8 +11,8 @@
       "last_priority": 1
     },
     "situation_guide": {
-      "total_articles": 9,
-      "last_priority": 3
+      "total_articles": 10,
+      "last_priority": 1
     }
   }
 }
